@@ -33,6 +33,10 @@ contract sendMoneyUntil {
   /// @notice Used to increase the id of the agreements in the "createAgreements" function
   uint numAgreement;
 
+  constructor(){
+      owner = msg.sender;
+  }
+
 
 
 }
