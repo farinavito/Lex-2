@@ -98,10 +98,27 @@ contract sendMoneyUntil {
   /// @notice When an account is removed from white- or blacklist
   event RemovedFromTheList(address account);
 
+  /// @notice Adding address to the whitelist
+  function addToWhitelist(address _address) external onlyOwner {
+    whitelist[_address] = true;
+    emit AddedToTheList(_address);
+  }
+  
+  /// @notice Removing address from the whitelist
+  function removedFromWhitelist(address _address) external onlyOwner {
+    whitelist[_address] = false;
+    emit RemovedFromTheList(_address);
+  }
+  
+  /// @notice Checking if the address is whitelisted
+  function isWhitelisted(address _address) public view returns(bool) {
+    return whitelist[_address];
+  }
 
 
 
-fallback() external {}
-receive() external payable {}
+
+ fallback() external {}
+ receive() external payable {}
 
 }
