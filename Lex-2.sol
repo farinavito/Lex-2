@@ -111,6 +111,14 @@ contract sendMoneyUntil {
 
         //creating a new agreement
         Agreement storage newAgreement = exactAgreement[agreementId];
+        //rule for the deposit -> min is 100 wei, if larger _amount, deposit is 10% of the _amount
+        uint256 minDeposit = 100;
+        if (msg.value >= minDeposit){
+
+        } else {
+
+        }
+
         newAgreement.id = agreementId;
         newAgreement.signee = msg.sender;
         newAgreement.receiver = _receiver;
