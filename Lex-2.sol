@@ -37,6 +37,23 @@ contract sendMoneyUntil {
       owner = msg.sender;
   }
 
+  modifier onlyOwner(){
+      require(msg.sender == owner, "You are not the owner");
+      _;
+  }
+
+   modifier noReentrant() {
+    require(locked == 1, "No re-entrancy");
+    locked = 2;
+    _;
+    locked = 1;
+  }
+
+  modifier onlyWhitelisted() {
+    require(isWhitelisted(msg.sender), "You aren't whitelisted");
+    _;
+  }
+
 
 
 }
