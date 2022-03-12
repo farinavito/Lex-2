@@ -11,6 +11,7 @@ contract sendMoneyUntil {
     address signee;
     address payable receiver; 
     uint256 amount;
+    uint256 deposit;
     uint256 transactionCreated;
     string status;
     string approved;
@@ -78,6 +79,7 @@ contract sendMoneyUntil {
     address agreementSignee, 
     address agreementReceiver, 
     uint256 agreementAmount,
+    uint256 agreementDeposit,
     uint256 agreementTransactionCreated,
     string agreementStatus,
     string agreementApproved,
@@ -102,10 +104,9 @@ contract sendMoneyUntil {
     uint256 _amount,
     uint256 _deadline,
     ) external payable {
-        require(_amount > 0 && _everyTimeUnit > 0 && _howLong > 0, "All input data must be larger than 0");
-        require(_howLong > _everyTimeUnit, "The period of the payment is greater than the duration of the contract");
+        require(_amount > 0 && _deadline > 0, "All input data must be larger than 0");
         require(msg.value >= _amount, "Deposit has to be at least the size of the amount");
-        require(_startOfTheAgreement >= block.timestamp, "The agreement can't be created in the past");
+        require(_deadline >= block.timestamp, "The agreement can't be created in the past");
         uint256 agreementId = numAgreement++;
 
         //creating a new agreement
@@ -123,12 +124,8 @@ contract sendMoneyUntil {
         newAgreement.approved = "Not Confirmed";
         //when was the agreement created
         newAgreement.agreementStartDate= _startOfTheAgreement;
-        //period of the payment
-        newAgreement.everyTimeUnit = _everyTimeUnit;
-        //position of the end of the period in which the signee has to send the money (for example: ...every 3 weeks... - this period needs to update itself)
-        newAgreement.positionPeriod = 0;
         //how long will the agreement last
-        newAgreement.howLong = _howLong;
+        newAgreement.deadline = _deadline;
         //storing the ids of the agreements and connecting them to msg.sender's address so we can display them to the frontend
         mySenderAgreements[msg.sender].push(agreementId);
         //storing the ids of the agreements and connecting them to _receiver's address so we can display them to the frontend
@@ -139,6 +136,7 @@ contract sendMoneyUntil {
           newAgreement.signee, 
           newAgreement.receiver, 
           newAgreement.amount,
+          newAgreement.deposit,
           newAgreement.transactionCreated, 
           newAgreement.status,
           newAgreement.approved, 
