@@ -100,4 +100,8 @@ contract sendMoneyUntil {
 
 
 
+
+fallback() external {}
+receive() external payable {}
+
 }
