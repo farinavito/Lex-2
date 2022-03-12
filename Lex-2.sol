@@ -98,6 +98,38 @@ contract sendMoneyUntil {
   /// @notice When an account is removed from white- or blacklist
   event RemovedFromTheList(address account);
 
+  /// @notice The signee withdrawing the money that belongs to his/her address
+  function withdrawAsTheSignee(uint256 _id) external payable noReentrant {
+	  require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
+    require(withdraw_signee[exactAgreement[_id].signee] > 0, "There aren't any funds to withdraw");
+	  uint256 current_amount = withdraw_signee[exactAgreement[_id].signee];
+	  withdraw_signee[exactAgreement[_id].signee] = 0;
+	  (bool sent, ) = exactAgreement[_id].signee.call{value: current_amount}("");
+    require(sent, "Failed to send Ether");
+	  emit NotifyUser("Withdrawal has been transfered");
+  }
+
+  /// @notice The receiver withdrawing the money that belongs to his/her address
+  function withdrawAsTheReceiver(uint256 _id) external payable noReentrant {
+    require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
+    require(withdraw_receiver[exactAgreement[_id].receiver] > 0, "There aren't any funds to withdraw");
+    uint256 current_amount = withdraw_receiver[exactAgreement[_id].receiver];
+    withdraw_receiver[exactAgreement[_id].receiver] = 0;
+    (bool sent, ) = exactAgreement[_id].receiver.call{value: current_amount}("");
+    require(sent, "Failed to send Ether");
+    emit NotifyUser("Withdrawal has been transfered");
+  }
+  
+  /// @notice The owner withdrawing the money that belongs to his address
+  function withdrawAsTheOwner() external payable noReentrant onlyWhitelisted{
+		require(withdrawal_amount_owner > 0, "There aren't any funds to withdraw");
+    uint256 current_amount = withdrawal_amount_owner; 
+    withdrawal_amount_owner = 0;
+    (bool sent, ) = msg.sender.call{value: current_amount}("");
+    require(sent, "Failed to send Ether");
+    emit NotifyUser("Withdrawal has been transfered");
+}
+
   /// @notice Adding address to the whitelist
   function addToWhitelist(address _address) external onlyOwner {
     whitelist[_address] = true;
