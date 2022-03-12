@@ -17,4 +17,22 @@ contract sendMoneyUntil {
     uint256 agreementStartDate;
     uint256 endPeriod;
   }
+
+  /// @notice Storing the owner's address
+  address public owner;
+
+  /// @notice Using against re-entrancy
+  uint16 internal locked = 1;
+
+  /// @notice The commission we charge
+  uint256 public commission = 1;
+
+  /// @notice The commission collected
+  uint256 private withdrawal_amount_owner;
+
+  /// @notice Used to increase the id of the agreements in the "createAgreements" function
+  uint numAgreement;
+
+
+
 }
