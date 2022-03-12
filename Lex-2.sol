@@ -73,5 +73,31 @@ contract sendMoneyUntil {
   mapping(address => bool) private whitelist;
 
 
+  /// @notice Emitting agreement's info 
+  event AgreementInfo(
+    uint256 agreementId,
+    address agreementSignee, 
+    address agreementReceiver, 
+    uint256 agreementAmount,
+    uint256 agreementTransactionCreated,
+    string agreementStatus,
+    string agreementApproved,
+    uint256 agreementStartDate,
+    uint256 agreementTimeDuration
+  );
+
+  /// @notice After the contract is terminated, emit an event with a message
+  event Terminated(string message);
+
+  /// @notice After other event than Terminated happens, emit it and send a message
+  event NotifyUser(string message);
+ 
+  /// @notice When an account is white- or blacklisted
+  event AddedToTheList(address account);
+ 
+  /// @notice When an account is removed from white- or blacklist
+  event RemovedFromTheList(address account);
+
+
 
 }
