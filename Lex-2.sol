@@ -54,6 +54,24 @@ contract sendMoneyUntil {
     _;
   }
 
+  /// @notice Saving the money sent for the signee to withdraw it
+  mapping(address => uint256) private withdraw_signee;
+
+  /// @notice Saving the money sent for the receiver to withdraw it
+  mapping(address => uint256) private withdraw_receiver;
+
+  /// @notice A unique identifier of the agreement. The same as the id.
+  mapping(uint256 => Agreement) public exactAgreement;
+
+  /// @notice Storing the id's of the agreements that the signee has created
+  mapping(address => uint[]) public mySenderAgreements;
+
+  /// @notice Storing the id's of the agreements of the same receiver address
+  mapping(address => uint[]) public myReceiverAgreements;
+
+  /// @notice Whitelisted accounts that can access withdrawal_amount_owner
+  mapping(address => bool) private whitelist;
+
 
 
 }
