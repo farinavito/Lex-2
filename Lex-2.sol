@@ -14,8 +14,7 @@ contract sendMoneyUntil {
     uint256 transactionCreated;
     string status;
     string approved;
-    uint256 agreementStartDate;
-    uint256 endPeriod;
+    uint256 deadline;
   }
 
   /// @notice Storing the owner's address
@@ -82,8 +81,7 @@ contract sendMoneyUntil {
     uint256 agreementTransactionCreated,
     string agreementStatus,
     string agreementApproved,
-    uint256 agreementStartDate,
-    uint256 agreementTimeDuration
+    uint256 agreementDeadline
   );
 
   /// @notice After the contract is terminated, emit an event with a message
@@ -97,6 +95,56 @@ contract sendMoneyUntil {
  
   /// @notice When an account is removed from white- or blacklist
   event RemovedFromTheList(address account);
+
+
+  function createAgreement(
+    address payable _receiver, 
+    uint256 _amount,
+    uint256 _deadline,
+    ) external payable {
+        require(_amount > 0 && _everyTimeUnit > 0 && _howLong > 0, "All input data must be larger than 0");
+        require(_howLong > _everyTimeUnit, "The period of the payment is greater than the duration of the contract");
+        require(msg.value >= _amount, "Deposit has to be at least the size of the amount");
+        require(_startOfTheAgreement >= block.timestamp, "The agreement can't be created in the past");
+        uint256 agreementId = numAgreement++;
+
+        //creating a new agreement
+        Agreement storage newAgreement = exactAgreement[agreementId];
+        newAgreement.id = agreementId;
+        newAgreement.signee = msg.sender;
+        newAgreement.receiver = _receiver;
+        newAgreement.amount = _amount;
+
+        //the amount that is actually deposited to the agreement. We initialize it with 0
+        newAgreement.deposit = msg.value;
+        //the status of the agreement when its created
+        newAgreement.status = "Created";
+        //initialize the approved term
+        newAgreement.approved = "Not Confirmed";
+        //when was the agreement created
+        newAgreement.agreementStartDate= _startOfTheAgreement;
+        //period of the payment
+        newAgreement.everyTimeUnit = _everyTimeUnit;
+        //position of the end of the period in which the signee has to send the money (for example: ...every 3 weeks... - this period needs to update itself)
+        newAgreement.positionPeriod = 0;
+        //how long will the agreement last
+        newAgreement.howLong = _howLong;
+        //storing the ids of the agreements and connecting them to msg.sender's address so we can display them to the frontend
+        mySenderAgreements[msg.sender].push(agreementId);
+        //storing the ids of the agreements and connecting them to _receiver's address so we can display them to the frontend
+        myReceiverAgreements[_receiver].push(agreementId);
+
+        emit AgreementInfo(
+          newAgreement.id, 
+          newAgreement.signee, 
+          newAgreement.receiver, 
+          newAgreement.amount,
+          newAgreement.transactionCreated, 
+          newAgreement.status,
+          newAgreement.approved, 
+          newAgreement.deadline
+          ); 
+  }
 
   /// @notice The signee withdrawing the money that belongs to his/her address
   function withdrawAsTheSignee(uint256 _id) external payable noReentrant {
