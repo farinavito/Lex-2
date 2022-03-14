@@ -140,8 +140,6 @@ contract sendMoneyUntil {
         newAgreement.status = "Created";
         //initialize the approved term
         newAgreement.approved = "Not Confirmed";
-        //when was the agreement created
-        newAgreement.agreementStartDate= _startOfTheAgreement;
         //how long will the agreement last
         newAgreement.deadline = _deadline;
         //storing the ids of the agreements and connecting them to msg.sender's address so we can display them to the frontend
