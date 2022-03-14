@@ -204,9 +204,7 @@ contract sendMoneyUntil {
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
         require(exactAgreement[_id].deadline > block.timestamp, "The agreement's deadline has ended");
         require(exactAgreement[_id].amount <= msg.value, "The amount sent isn't equal to the contract's amount");
-        exactAgreement[_id].status = "Activated";
-        //set the position period
-        initializingPositionPeriod(_id);
+        
         emit NotifyUser("The agreement has been activated"); 
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
           //return the transaction to the signee
