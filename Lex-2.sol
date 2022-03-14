@@ -114,7 +114,6 @@ contract sendMoneyUntil {
     uint256 _deadline,
     ) external payable {
         require(_amount > 0 && _deadline > 0, "All input data must be larger than 0");
-        require(msg.value >= _amount, "Deposit has to be at least the size of the amount");
         require(_deadline >= block.timestamp, "The agreement can't be created in the past");
         uint256 agreementId = numAgreement++;
 
@@ -128,6 +127,8 @@ contract sendMoneyUntil {
         } else {
           newAgreement.deposit = minDeposit;
         }
+
+        require(msg.value >= newAgreement.deposit, "Deposit needs to be 10% of the amount or at least 100 wei");
 
         newAgreement.id = agreementId;
         newAgreement.signee = msg.sender;
