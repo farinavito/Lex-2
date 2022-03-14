@@ -151,6 +151,22 @@ contract sendMoneyUntil {
           ); 
   }
 
+  function confirmAgreement(uint256 _id) external {
+    if (keccak256(bytes(exactAgreement[_id].approved)) == keccak256(bytes("Confirmed"))){
+		  emit NotifyUser("The agreement is already confirmed");
+	  } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
+      emit NotifyUser("The agreement is already terminated");
+    } else {
+      require(exactAgreement[_id].receiver == msg.sender, "Only the receiver can confirm the agreement");
+      //cannot confirm an agreement that ends in the past
+      require(exactAgreement[_id].deadline < block.timestamp, "The agreement's deadline has ended");
+      //confirm the agreement
+      exactAgreement[_id].approved = "Confirmed";
+      //emit that the agreement was confirmed
+      emit NotifyUser("The agreement was confirmed");
+	  }
+  }
+
   /// @notice The signee withdrawing the money that belongs to his/her address
   function withdrawAsTheSignee(uint256 _id) external payable noReentrant {
 	  require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
