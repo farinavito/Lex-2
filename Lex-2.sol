@@ -189,6 +189,44 @@ contract sendMoneyUntil {
 	  }
   }
 
+  /// @notice Receiver checking if the contract has been breached
+  function wasContractBreached(uint256 _id) external {
+    require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
+    //checking if the agreement was Activated
+    if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Activated"))){
+      //checking if the deadline was breached
+      if (exactAgreement[_id].deadline > block.timestamp){
+        emit NotifyUser("The agreement wasn't breached");
+      } else {
+        //receiver has to wait 7 days after the breached date to withdraw the deposit
+        require(exactAgreement[_id].positionPeriod + (60*60*24*7) < block.timestamp, "You can't withdraw the deposit before 7 days after breached deadline");
+        //terminate the agreement
+        exactAgreement[_id].status = "Terminated";
+        //return deposit to receiver
+        withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
+        //ensure that the deposit is reduced to 0
+        exactAgreement[_id].deposit = 0;
+        emit Terminated("The agreement has been terminated");
+      } 
+    } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
+      if (exactAgreement[_id].deadline > block.timestamp){
+        emit NotifyUser("The agreement wasn't breached");
+      } else {
+        //receiver has to wait 7 days after the breached date to withdraw the deposit
+        require(exactAgreement[_id].positionPeriod + (60*60*24*7) < block.timestamp, "You can't withdraw the deposit before 7 days after breached deadline");
+        //terminate the agreement
+        exactAgreement[_id].status = "Terminated";
+        //return deposit to receiver
+        withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
+        //ensure that the deposit is reduced to 0
+        exactAgreement[_id].deposit = 0;
+        emit Terminated("The agreement has been terminated");
+      }
+    } else {
+        emit NotifyUser("The agreement is already terminated");
+    }
+  } 
+
   /// @notice The signee withdrawing the money that belongs to his/her address
   function withdrawAsTheSignee(uint256 _id) external payable noReentrant {
 	  require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
