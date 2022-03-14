@@ -212,7 +212,7 @@ contract sendMoneyUntil {
         require(exactAgreement[_id].amount <= msg.value, "The amount sent isn't equal to the contract's amount");
         require(exactAgreement[_id].fullfilled == false, "This agreement has already been fullfilled");
         
-
+        exactAgreement[_id].fullfilled == true;
         emit NotifyUser("The agreement has been fullfilled"); 
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
           //return the transaction to the signee
