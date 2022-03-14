@@ -167,6 +167,28 @@ contract sendMoneyUntil {
 	  }
   }
 
+  function terminateContract(uint256 _id) external {
+    if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
+		  emit NotifyUser("The agreement is already terminated");
+	  } else if (exactAgreement[_id].deadline < block.timestamp){
+        require(exactAgreement[_id].signee == msg.sender, "Only the owner can terminate the agreement");
+        exactAgreement[_id].status = "Terminated";
+        //return the deposit to the signee
+        withdraw_signee[exactAgreement[_id].signee] += exactAgreement[_id].deposit;
+        //ensure that the deposit is reduced to 0
+        exactAgreement[_id].deposit = 0;
+        emit Terminated("The agreement has been terminated");
+    } else {
+        require(exactAgreement[_id].signee == msg.sender, "Only the owner can terminate the agreement");
+        exactAgreement[_id].status = "Terminated";
+        //return the deposit to the receiver
+        withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
+        //ensure that the deposit is reduced to 0
+        exactAgreement[_id].deposit = 0;
+        emit Terminated("The agreement has been terminated");
+	  }
+  }
+
   /// @notice The signee withdrawing the money that belongs to his/her address
   function withdrawAsTheSignee(uint256 _id) external payable noReentrant {
 	  require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
