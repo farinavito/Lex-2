@@ -125,8 +125,6 @@ contract sendMoneyUntil {
         newAgreement.receiver = _receiver;
         newAgreement.amount = _amount;
 
-        //the amount that is actually deposited to the agreement. We initialize it with 0
-        //newAgreement.deposit = msg.value;
         //the status of the agreement when its created
         newAgreement.status = "Created";
         //initialize the approved term
