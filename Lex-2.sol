@@ -120,7 +120,7 @@ contract sendMoneyUntil {
 
         //creating a new agreement
         Agreement storage newAgreement = exactAgreement[agreementId];
-        
+
         //rule for the deposit -> min is 100 wei, if larger _amount, deposit is 10% of the _amount -> bp 10
         uint256 minDeposit = 100;
         if (msg.value >= 1000){
@@ -281,7 +281,31 @@ contract sendMoneyUntil {
     (bool sent, ) = msg.sender.call{value: current_amount}("");
     require(sent, "Failed to send Ether");
     emit NotifyUser("Withdrawal has been transfered");
-}
+  }
+
+  /// @notice Return the withdrawal amount of the agreement's signee
+  function getWithdrawalSignee(uint256 _id) external view returns(uint256){
+    require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
+    return withdraw_signee[exactAgreement[_id].signee];
+  }
+
+  /// @notice Return the withdrawal amount of the agreement's receiver
+  function getWithdrawalReceiver(uint256 _id) external view returns(uint256){
+    require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
+    return withdraw_receiver[exactAgreement[_id].receiver];
+  }
+
+  /// @notice Return the withdrawal amount of the owner
+  function getWithdrawalOwner() external view onlyWhitelisted returns(uint256){
+    return withdrawal_amount_owner;
+  }
+  
+  /// @notice Changing the commission
+  function changeCommission(uint256 _newCommission) external onlyOwner{
+		require(_newCommission > 0 && _newCommission < 10*15 + 1, "Commission doesn't follow the rules");
+		commission = _newCommission;
+		emit NotifyUser("Commission changed");
+	}
 
   /// @notice Adding address to the whitelist
   function addToWhitelist(address _address) external onlyOwner {
