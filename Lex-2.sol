@@ -160,6 +160,7 @@ contract sendMoneyUntil {
           ); 
   }
 
+  /// @notice Confirming the agreement by the receiver, thus enabling it to receive funds
   function confirmAgreement(uint256 _id) external {
     if (keccak256(bytes(exactAgreement[_id].approved)) == keccak256(bytes("Confirmed"))){
 		  emit NotifyUser("The agreement is already confirmed");
@@ -176,6 +177,7 @@ contract sendMoneyUntil {
 	  }
   }
 
+  /// @notice Terminating the agreement by the signee
   function terminateContract(uint256 _id) external {
     if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
 		  emit NotifyUser("The agreement is already terminated");
