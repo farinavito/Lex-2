@@ -111,12 +111,13 @@ contract sendMoneyUntil {
 
         //creating a new agreement
         Agreement storage newAgreement = exactAgreement[agreementId];
-        //rule for the deposit -> min is 100 wei, if larger _amount, deposit is 10% of the _amount
+        //rule for the deposit -> min is 100 wei, if larger _amount, deposit is 10% of the _amount -> bp 10
         uint256 minDeposit = 100;
-        if (msg.value >= minDeposit){
-
+        if (msg.value >= 1000){
+          //check if it works
+          newAgreement.deposit = msg.value * 10 / 10000;
         } else {
-
+          newAgreement.deposit = minDeposit;
         }
 
         newAgreement.id = agreementId;
@@ -125,7 +126,7 @@ contract sendMoneyUntil {
         newAgreement.amount = _amount;
 
         //the amount that is actually deposited to the agreement. We initialize it with 0
-        newAgreement.deposit = msg.value;
+        //newAgreement.deposit = msg.value;
         //the status of the agreement when its created
         newAgreement.status = "Created";
         //initialize the approved term
