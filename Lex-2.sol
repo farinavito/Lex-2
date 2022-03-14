@@ -120,6 +120,7 @@ contract sendMoneyUntil {
 
         //creating a new agreement
         Agreement storage newAgreement = exactAgreement[agreementId];
+        
         //rule for the deposit -> min is 100 wei, if larger _amount, deposit is 10% of the _amount -> bp 10
         uint256 minDeposit = 100;
         if (msg.value >= 1000){
@@ -298,9 +299,6 @@ contract sendMoneyUntil {
   function isWhitelisted(address _address) public view returns(bool) {
     return whitelist[_address];
   }
-
-
-
 
  fallback() external {}
  receive() external payable {}
