@@ -211,8 +211,16 @@ contract sendMoneyUntil {
         require(exactAgreement[_id].deadline > block.timestamp, "The agreement's deadline has ended");
         require(exactAgreement[_id].amount <= msg.value, "The amount sent isn't equal to the contract's amount");
         require(exactAgreement[_id].fullfilled == false, "This agreement has already been fullfilled");
-        
-        exactAgreement[_id].fullfilled == true;
+
+        //storing the amount sent subtracted by commission
+        uint256 changedAmount;
+        changedAmount = msg.value - commission;
+        //adding the commission to a owner's withdrawal
+        withdrawal_amount_owner += commission;
+        //send the transaction to the receiver
+        withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
+        //terminate the agreement
+        exactAgreement[_id].status = "Terminated";
         emit NotifyUser("The agreement has been fullfilled"); 
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
           //return the transaction to the signee
