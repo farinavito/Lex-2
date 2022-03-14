@@ -12,7 +12,7 @@ contract sendMoneyUntil {
     /// @param amount The quantity of money that the signee commits sending to the receiver
     /// @param transactionCreated Unix timestamp when transaction was sent
     /// @param deposit The first transaction sent to the agreement. Initial state will be zero
-    /// @param status Representation of different stages in the agreement: Created, Activated, Terminated
+    /// @param status Representation of different stages in the agreement: Created, Terminated
     /// @param approved Confirmation of the agreedDeposit by the receiver: Not Confirmed, Confirmed
     /// @param deadline The number of days till the agreement expires
     struct Agreement{
