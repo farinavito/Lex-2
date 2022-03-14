@@ -15,6 +15,7 @@ contract sendMoneyUntil {
     /// @param status Representation of different stages in the agreement: Created, Terminated
     /// @param approved Confirmation of the agreedDeposit by the receiver: Not Confirmed, Confirmed
     /// @param deadline The number of days till the agreement expires
+    /// @param fullfilled If the agreements terms have been fullfilled
     struct Agreement{
     uint256 id; 
     address signee;
@@ -25,6 +26,7 @@ contract sendMoneyUntil {
     string status;
     string approved;
     uint256 deadline;
+    bool fullfilled;
   }
 
   /// @notice Storing the owner's address
@@ -92,7 +94,8 @@ contract sendMoneyUntil {
     uint256 agreementTransactionCreated,
     string agreementStatus,
     string agreementApproved,
-    uint256 agreementDeadline
+    uint256 agreementDeadline,
+    bool agreementFullfilled
   );
 
   /// @notice After the contract is terminated, emit an event with a message
@@ -142,6 +145,8 @@ contract sendMoneyUntil {
         newAgreement.approved = "Not Confirmed";
         //how long will the agreement last
         newAgreement.deadline = _deadline;
+        //initializing variable to false
+        newAgreement.fullfilled = false;
         //storing the ids of the agreements and connecting them to msg.sender's address so we can display them to the frontend
         mySenderAgreements[msg.sender].push(agreementId);
         //storing the ids of the agreements and connecting them to _receiver's address so we can display them to the frontend
@@ -156,7 +161,8 @@ contract sendMoneyUntil {
           newAgreement.transactionCreated, 
           newAgreement.status,
           newAgreement.approved, 
-          newAgreement.deadline
+          newAgreement.deadline,
+          newAgreement.fullfilled
           ); 
   }
 
