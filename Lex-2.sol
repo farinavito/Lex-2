@@ -202,8 +202,8 @@ contract sendMoneyUntil {
         emit Terminated("The agreement was terminated due to late payment");
       }
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
-        require(exactAgreement[_id].howLong + exactAgreement[_id].agreementStartDate > block.timestamp, "The agreement's deadline has ended");
-        require(exactAgreement[_id].amount <= msg.value, "The deposit is not the same as agreed in the terms");
+        require(exactAgreement[_id].deadline > block.timestamp, "The agreement's deadline has ended");
+        require(exactAgreement[_id].amount <= msg.value, "The amount sent isn't equal to the contract's amount");
         exactAgreement[_id].status = "Activated";
         //set the position period
         initializingPositionPeriod(_id);
