@@ -115,6 +115,7 @@ contract sendMoneyUntil {
     ) external payable {
         require(_amount > 0 && _deadline > 0, "All input data must be larger than 0");
         require(_deadline >= block.timestamp, "The agreement can't be created in the past");
+        //increment the agreement id
         uint256 agreementId = numAgreement++;
 
         //creating a new agreement
