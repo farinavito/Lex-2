@@ -5,7 +5,16 @@ pragma solidity 0.8.11;
 /// @author Farina Vito
 
 contract sendMoneyUntil {
-
+    /// @notice Defining the agreement 
+    /// @param id A unique identifier of the agreement
+    /// @param signee The person who commits sending the money to the receiver 
+    /// @param receiver The person receiving the money
+    /// @param amount The quantity of money that the signee commits sending to the receiver
+    /// @param transactionCreated Unix timestamp when transaction was sent
+    /// @param deposit The first transaction sent to the agreement. Initial state will be zero
+    /// @param status Representation of different stages in the agreement: Created, Activated, Terminated
+    /// @param approved Confirmation of the agreedDeposit by the receiver: Not Confirmed, Confirmed
+    /// @param deadline The number of days till the agreement expires
     struct Agreement{
     uint256 id; 
     address signee;
