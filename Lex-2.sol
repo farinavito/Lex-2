@@ -210,7 +210,9 @@ contract sendMoneyUntil {
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
         require(exactAgreement[_id].deadline > block.timestamp, "The agreement's deadline has ended");
         require(exactAgreement[_id].amount <= msg.value, "The amount sent isn't equal to the contract's amount");
+        require(exactAgreement[_id].fullfilled == false, "This agreement has already been fullfilled");
         
+
         emit NotifyUser("The agreement has been fullfilled"); 
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
           //return the transaction to the signee
