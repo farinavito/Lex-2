@@ -38,7 +38,7 @@ contract sendMoneyUntil {
   uint256 private withdrawal_amount_owner;
 
   /// @notice Used to increase the id of the agreements in the "createAgreements" function
-  uint numAgreement;
+  uint numAgreement = 1;
 
   constructor(){
       owner = msg.sender;
@@ -292,6 +292,11 @@ contract sendMoneyUntil {
   function isWhitelisted(address _address) public view returns(bool) {
     return whitelist[_address];
   }
+
+  //how much ether in total was commited to someone
+  //how much deposit was sent 
+  //how many agreements there are
+  //how much commission was taken out?
 
  fallback() external {}
  receive() external payable {}
