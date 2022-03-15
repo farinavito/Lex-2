@@ -184,7 +184,7 @@ contract sendMoneyUntil {
         //if the transaction was on time, but it wasn't enough
         } else {
             exactAgreement[_id].status = "Terminated"; 
-            //sending the deposit to the receiver
+            //sending the deposit to the signee
             withdraw_signee[exactAgreement[_id].signee] += exactAgreement[_id].deposit;
             //ensure that the deposit is reduced to 0
             exactAgreement[_id].deposit = 0;
