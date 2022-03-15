@@ -165,10 +165,7 @@ contract sendMoneyUntil {
     //the agreement has to be confirmed from the receiver of the agreement
     require(keccak256(bytes(exactAgreement[_id].approved)) == keccak256(bytes("Confirmed")), "The receiver has to confirm the contract");
     if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
-        require(exactAgreement[_id].deadline > block.timestamp, "The agreement's deadline has ended");
-        require(exactAgreement[_id].amount <= msg.value, "The amount sent isn't equal to the contract's amount");
-
-        if (timeNotBreached(_id)){
+        if (exactAgreement[_id].deadline > block.timestamp){
           if (exactAgreement[_id].amount <= msg.value){
             //storing the amount sent subtracted by commission
             uint256 changedAmount;
