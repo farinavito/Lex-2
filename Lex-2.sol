@@ -13,7 +13,6 @@ contract sendMoneyUntil {
     /// @param transactionCreated Unix timestamp when transaction was sent
     /// @param deposit The first transaction sent to the agreement. Initial state will be zero
     /// @param status Representation of different stages in the agreement: Created, Terminated
-    /// @param approved Confirmation of the agreedDeposit by the receiver: Not Confirmed, Confirmed
     /// @param deadline The number of days till the agreement expires
     struct Agreement{
     uint256 id; 
@@ -23,7 +22,6 @@ contract sendMoneyUntil {
     uint256 deposit;
     uint256 transactionCreated;
     string status;
-    string approved;
     uint256 deadline;
   }
 
@@ -91,7 +89,6 @@ contract sendMoneyUntil {
     uint256 agreementDeposit,
     uint256 agreementTransactionCreated,
     string agreementStatus,
-    string agreementApproved,
     uint256 agreementDeadline
   );
 
@@ -137,8 +134,6 @@ contract sendMoneyUntil {
 
         //the status of the agreement when its created
         newAgreement.status = "Created";
-        //initialize the approved term
-        newAgreement.approved = "Not Confirmed";
         //how long will the agreement last
         newAgreement.deadline = _deadline;
         //storing the ids of the agreements and connecting them to msg.sender's address so we can display them to the frontend
@@ -154,7 +149,6 @@ contract sendMoneyUntil {
           newAgreement.deposit,
           newAgreement.transactionCreated, 
           newAgreement.status,
-          newAgreement.approved, 
           newAgreement.deadline
           ); 
   }
@@ -163,7 +157,6 @@ contract sendMoneyUntil {
   function sendPayment(uint256 _id) external payable {
     require(exactAgreement[_id].signee == msg.sender, "Only the owner can pay the agreement's terms");
     //the agreement has to be confirmed from the receiver of the agreement
-    require(keccak256(bytes(exactAgreement[_id].approved)) == keccak256(bytes("Confirmed")), "The receiver has to confirm the contract");
     if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
       //if the deadline wasn't breached
       if (exactAgreement[_id].deadline > block.timestamp){
@@ -205,23 +198,6 @@ contract sendMoneyUntil {
           //return the transaction to the signee
           revert("There is no agreement with this id");
     }
-  }
-
-  /// @notice Confirming the agreement by the receiver, thus enabling it to receive funds
-  function confirmAgreement(uint256 _id) external {
-    if (keccak256(bytes(exactAgreement[_id].approved)) == keccak256(bytes("Confirmed"))){
-		  emit NotifyUser("The agreement is already confirmed");
-	  } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
-      emit NotifyUser("The agreement is already terminated");
-    } else {
-      require(exactAgreement[_id].receiver == msg.sender, "Only the receiver can confirm the agreement");
-      //cannot confirm an agreement that ends in the past
-      require(exactAgreement[_id].deadline < block.timestamp, "The agreement's deadline has ended");
-      //confirm the agreement
-      exactAgreement[_id].approved = "Confirmed";
-      //emit that the agreement was confirmed
-      emit NotifyUser("The agreement was confirmed");
-	  }
   }
 
   /// @notice Terminating the agreement by the signee
