@@ -176,6 +176,8 @@ contract sendMoneyUntil {
           withdrawal_amount_owner += commission;
           //send the transaction to the receiver
           withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
+          //returning any access ethers sent to the sender
+          withdraw_signee[exactAgreement[_id].signee] += msg.value - exactAgreement[_id].amount;
           //terminate the agreement
           exactAgreement[_id].status = "Terminated";
           emit NotifyUser("The agreement has been fullfilled"); 
