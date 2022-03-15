@@ -165,40 +165,42 @@ contract sendMoneyUntil {
     //the agreement has to be confirmed from the receiver of the agreement
     require(keccak256(bytes(exactAgreement[_id].approved)) == keccak256(bytes("Confirmed")), "The receiver has to confirm the contract");
     if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
-        if (exactAgreement[_id].deadline > block.timestamp){
-          if (exactAgreement[_id].amount <= msg.value){
-            //storing the amount sent subtracted by commission
-            uint256 changedAmount;
-            changedAmount = msg.value - commission;
-            //adding the commission to a owner's withdrawal
-            withdrawal_amount_owner += commission;
-            //send the transaction to the receiver
-            withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
-            //terminate the agreement
-            exactAgreement[_id].status = "Terminated";
-            emit NotifyUser("The agreement has been fullfilled"); 
-          //if the transaction was on time, but it wasn't enough
-          } else {
-              exactAgreement[_id].status = "Terminated"; 
-              //sending the deposit to the receiver
-              withdraw_signee[exactAgreement[_id].signee] += exactAgreement[_id].deposit;
-              //ensure that the deposit is reduced to 0
-              exactAgreement[_id].deposit = 0;
-              //return the transaction to the signee
-              withdraw_signee[exactAgreement[_id].signee] += msg.value;
-              emit Terminated("The agreement was terminated due to different amount sent than in the terms");      
-          }
-        //if the transaction wasn't sent on time
-        } else {
+      //if the deadline wasn't breached
+      if (exactAgreement[_id].deadline > block.timestamp){
+        //if the amount sent wasn't enough
+        if (exactAgreement[_id].amount <= msg.value){
+          //storing the amount sent subtracted by commission
+          uint256 changedAmount;
+          changedAmount = msg.value - commission;
+          //adding the commission to a owner's withdrawal
+          withdrawal_amount_owner += commission;
+          //send the transaction to the receiver
+          withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
+          //terminate the agreement
           exactAgreement[_id].status = "Terminated";
-          //sending the deposit to the receiver
-          withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
-          //ensure that the deposit is reduced to 0
-          exactAgreement[_id].deposit = 0;
-          //return the transaction to the signee
-          withdraw_signee[exactAgreement[_id].signee] += msg.value;
-          emit Terminated("The agreement was terminated due to late payment");
+          emit NotifyUser("The agreement has been fullfilled"); 
+        //if the transaction was on time, but it wasn't enough
+        } else {
+            exactAgreement[_id].status = "Terminated"; 
+            //sending the deposit to the receiver
+            withdraw_signee[exactAgreement[_id].signee] += exactAgreement[_id].deposit;
+            //ensure that the deposit is reduced to 0
+            exactAgreement[_id].deposit = 0;
+            //return the transaction to the signee
+            withdraw_signee[exactAgreement[_id].signee] += msg.value;
+            emit Terminated("The agreement was terminated due to different amount sent than in the terms");      
         }
+      //if the transaction wasn't sent on time
+      } else {
+        exactAgreement[_id].status = "Terminated";
+        //sending the deposit to the receiver
+        withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
+        //ensure that the deposit is reduced to 0
+        exactAgreement[_id].deposit = 0;
+        //return the transaction to the signee
+        withdraw_signee[exactAgreement[_id].signee] += msg.value;
+        emit Terminated("The agreement was terminated due to late payment");
+      }
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
           //return the transaction to the signee
           revert("The agreement is already terminated");
