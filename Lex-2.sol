@@ -101,13 +101,13 @@ contract sendMoneyUntil {
   /// @notice After other event than Terminated happens, emit it and send a message
   event NotifyUser(string message);
  
-  /// @notice When an account is white- or blacklisted
+  /// @notice When an account is whitelisted
   event AddedToTheList(address account);
  
-  /// @notice When an account is removed from white- or blacklist
+  /// @notice When an account is removed from whiteklist
   event RemovedFromTheList(address account);
 
-
+  /// @notice Creating an agreement and sending the deposit
   function createAgreement(
     address payable _receiver, 
     uint256 _amount,
