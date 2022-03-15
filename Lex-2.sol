@@ -200,29 +200,6 @@ contract sendMoneyUntil {
     }
   }
 
-  /// @notice Terminating the agreement by the signee
-  function terminateContract(uint256 _id) external {
-    if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
-		  emit NotifyUser("The agreement is already terminated");
-	  } else if (exactAgreement[_id].deadline < block.timestamp){
-        require(exactAgreement[_id].signee == msg.sender, "Only the signee can terminate the agreement");
-        exactAgreement[_id].status = "Terminated";
-        //return the deposit to the signee
-        withdraw_signee[exactAgreement[_id].signee] += exactAgreement[_id].deposit;
-        //ensure that the deposit is reduced to 0
-        exactAgreement[_id].deposit = 0;
-        emit Terminated("The agreement has been terminated");
-    } else {
-        require(exactAgreement[_id].signee == msg.sender, "Only the signee can terminate the agreement");
-        exactAgreement[_id].status = "Terminated";
-        //return the deposit to the receiver
-        withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
-        //ensure that the deposit is reduced to 0
-        exactAgreement[_id].deposit = 0;
-        emit Terminated("The agreement has been terminated");
-	  }
-  }
-
   /// @notice Receiver checking if the contract has been breached
   function wasContractBreached(uint256 _id) external {
     require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
