@@ -207,8 +207,6 @@ contract sendMoneyUntil {
       if (exactAgreement[_id].deadline > block.timestamp){
         emit NotifyUser("The agreement wasn't breached");
       } else {
-        //receiver has to wait 7 days after the breached date to withdraw the deposit
-        require(exactAgreement[_id].positionPeriod + (60*60*24*7) < block.timestamp, "You can't withdraw the deposit before 7 days after breached deadline");
         //terminate the agreement
         exactAgreement[_id].status = "Terminated";
         //return deposit to receiver
