@@ -174,7 +174,9 @@ contract sendMoneyUntil {
             withdrawal_amount_owner += commission;
             //send the transaction to the receiver
             withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
-            emit NotifyUser("Transaction was sent to the receiver");
+            //terminate the agreement
+            exactAgreement[_id].status = "Terminated";
+            emit NotifyUser("The agreement has been fullfilled"); 
           //if the transaction was on time, but it wasn't enough
           } else {
               exactAgreement[_id].status = "Terminated"; 
@@ -197,17 +199,6 @@ contract sendMoneyUntil {
           withdraw_signee[exactAgreement[_id].signee] += msg.value;
           emit Terminated("The agreement was terminated due to late payment");
         }
-
-        //storing the amount sent subtracted by commission
-        uint256 changedAmount;
-        changedAmount = msg.value - commission;
-        //adding the commission to a owner's withdrawal
-        withdrawal_amount_owner += commission;
-        //send the transaction to the receiver
-        withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
-        //terminate the agreement
-        exactAgreement[_id].status = "Terminated";
-        emit NotifyUser("The agreement has been fullfilled"); 
     } else if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Terminated"))){
           //return the transaction to the signee
           revert("The agreement is already terminated");
