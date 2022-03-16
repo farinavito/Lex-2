@@ -83,7 +83,7 @@ contract sendMoneyUntil {
   mapping(address => uint[]) public myReceiverAgreements;
 
   /// @notice Whitelisted accounts that can access withdrawal_amount_owner
-  mapping(address => bool) private whitelist;
+  mapping(address => bool) internal whitelist;
 
 
   /// @notice Emitting agreement's info 
