@@ -282,7 +282,7 @@ contract sendMoneyUntil {
   }
   
   /// @notice Changing the commission
-  function changeCommission(uint256 _newCommission) external onlyOwner {
+  function changeCommission(uint256 _newCommission) external onlyWhitelisted {
 		require(_newCommission > 0 && _newCommission < 10*15 + 1, "Commission doesn't follow the rules");
 		commission = _newCommission;
 		emit NotifyUser("Commission changed");
@@ -301,9 +301,12 @@ contract sendMoneyUntil {
   }
   
   /// @notice Checking if the address is whitelisted
+  //create an external function onlyWhitelisted
   function isWhitelisted(address _address) internal view returns(bool) {
     return whitelist[_address];
   }
+
+  //function changeOwner?
 
  fallback() external {}
  receive() external payable {}
