@@ -43,6 +43,9 @@ contract sendMoneyUntil {
   /// @notice Returning the total amount of ether that was commited
   uint256 public totalEtherCommited;
 
+  /// @notice Returning the total amount of deposit that was sent to the receiver
+  uint256 public totalDepositSent;  
+
   constructor(){
       owner = msg.sender;
   }
@@ -190,6 +193,8 @@ contract sendMoneyUntil {
         exactAgreement[_id].status = "Terminated";
         //sending the deposit to the receiver
         withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
+        //change the total amount of deposit sent to the receiver
+        totalDepositSent += exactAgreement[_id].deposit;
         //ensure that the deposit is reduced to 0
         exactAgreement[_id].deposit = 0;
         //return the transaction to the signee
@@ -216,6 +221,8 @@ contract sendMoneyUntil {
         exactAgreement[_id].status = "Terminated";
         //return deposit to receiver
         withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
+        //change the total amount of deposit sent to the receiver
+        totalDepositSent += exactAgreement[_id].deposit;
         //ensure that the deposit is reduced to 0
         exactAgreement[_id].deposit = 0;
         emit Terminated("The agreement has been terminated");
