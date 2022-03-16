@@ -301,8 +301,12 @@ contract sendMoneyUntil {
   }
   
   /// @notice Checking if the address is whitelisted
-  //create an external function onlyWhitelisted
   function isWhitelisted(address _address) internal view returns(bool) {
+    return whitelist[_address];
+  }
+
+  /// @notice Checking if the address is whitelisted by the same address
+  function isWhitelistedExternal(address _address) external view onlyWhitelisted returns(bool) {
     return whitelist[_address];
   }
 
