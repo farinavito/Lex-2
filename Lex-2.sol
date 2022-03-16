@@ -38,7 +38,7 @@ contract sendMoneyUntil {
   uint256 private withdrawal_amount_owner;
 
   /// @notice Used to increase the id of the agreements in the "createAgreements" function
-  uint numAgreement = 1;
+  uint public numAgreement = 1;
 
   /// @notice Returning the total amount of ether that was commited
   uint256 public totalEtherCommited;
@@ -304,11 +304,6 @@ contract sendMoneyUntil {
   function isWhitelisted(address _address) public view returns(bool) {
     return whitelist[_address];
   }
-
-
-  //how much deposit was sent 
-  //how many agreements there are
-  //how much commission was taken out?
 
  fallback() external {}
  receive() external payable {}
