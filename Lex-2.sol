@@ -40,6 +40,9 @@ contract sendMoneyUntil {
   /// @notice Used to increase the id of the agreements in the "createAgreements" function
   uint numAgreement = 1;
 
+  /// @notice Returning the total amount of ether that was commited
+  uint256 public totalEtherCommited;
+
   constructor(){
       owner = msg.sender;
   }
@@ -171,6 +174,8 @@ contract sendMoneyUntil {
           withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
           //returning any access ethers sent to the sender
           withdraw_signee[exactAgreement[_id].signee] += msg.value - exactAgreement[_id].amount;
+          //change the total amount of ether sent
+          totalEtherCommited += changedAmount;
           //terminate the agreement
           exactAgreement[_id].status = "Terminated";
           emit NotifyUser("The agreement has been fullfilled"); 
@@ -293,7 +298,7 @@ contract sendMoneyUntil {
     return whitelist[_address];
   }
 
-  //how much ether in total was commited to someone
+
   //how much deposit was sent 
   //how many agreements there are
   //how much commission was taken out?
