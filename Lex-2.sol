@@ -28,6 +28,10 @@ contract sendMoneyUntil {
   /// @notice Storing the owner's address
   address internal owner;
 
+  //add to separate smart contract
+  /// @notice Storing the next in line to be an owner
+  address waitingToBeOwner;
+
   /// @notice Using against re-entrancy
   uint16 internal locked = 1;
 
@@ -320,7 +324,14 @@ contract sendMoneyUntil {
     return whitelist[_address];
   }
 
-  //function changeOwner?
+  //add to separate smart contract
+  /// @notice Changing the owner and the waitingToBeOwner
+  function changeOwner(addres _nextInline) external {
+    require(waitingToBeOwner == msg.sender, "You don't have permissions");
+    require(waitingToBeOwner != _nextInline);
+    owner = waitingToBeOwner;
+    waitingToBeOwner = _nextInline;
+  }
 
 
  fallback() external {}
