@@ -25,9 +25,8 @@ contract sendMoneyUntil {
     uint256 deadline;
   }
 
-  //change to internal when implemented the other smart contract
   /// @notice Storing the owner's address
-  address public owner;
+  address internal owner;
 
   /// @notice Using against re-entrancy
   uint16 internal locked = 1;
