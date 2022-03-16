@@ -178,6 +178,8 @@ contract sendMoneyUntil {
           withdraw_signee[exactAgreement[_id].signee] += msg.value - exactAgreement[_id].amount;
           //change the total amount of ether sent
           totalEtherCommited += changedAmount;
+          //returning the deposit to the signee
+          withdraw_signee[exactAgreement[_id].signee] += exactAgreement[_id].deposit;
           //terminate the agreement
           exactAgreement[_id].status = "Terminated";
           emit NotifyUser("The agreement has been fullfilled"); 
