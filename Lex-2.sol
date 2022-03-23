@@ -30,10 +30,6 @@ contract sendMoneyUntil is ProtectorWhitelisted{
   /// @notice Storing the owner's address
   address internal owner;
 
-  //add to separate smart contract
-  /// @notice Storing the next in line to be an owner
-  address waitingToBeOwner;
-
   /// @notice Using against re-entrancy
   uint16 internal locked = 1;
 
@@ -53,28 +49,11 @@ contract sendMoneyUntil is ProtectorWhitelisted{
   /// @notice Returning the total amount of deposit that was sent to the receiver
   uint256 public totalDepositSent;  
 
-  //change the msg.sender to the owner of the child smart contract
-  constructor(){
-      owner = msg.sender;
-  }
-
-  //add to separate smart contract
-  modifier onlyOwner(){
-      require(msg.sender == owner, "You are not the owner");
-      _;
-  }
-
    modifier noReentrant() {
     require(locked == 1, "No re-entrancy");
     locked = 2;
     _;
     locked = 1;
-  }
-
-  //add to separate smart contract
-  modifier onlyWhitelisted() {
-    require(isWhitelisted(msg.sender), "You aren't whitelisted");
-    _;
   }
 
   /// @notice Saving the money sent for the signee to withdraw it
@@ -91,10 +70,6 @@ contract sendMoneyUntil is ProtectorWhitelisted{
 
   /// @notice Storing the id's of the agreements of the same receiver address
   mapping(address => uint[]) public myReceiverAgreements;
-
-  //add to separate smart contract
-  /// @notice Whitelisted accounts that can access withdrawal_amount_owner
-  mapping(address => bool) internal whitelist;
 
 
   /// @notice Emitting agreement's info 
@@ -114,14 +89,6 @@ contract sendMoneyUntil is ProtectorWhitelisted{
 
   /// @notice After other event than Terminated happens, emit it and send a message
   event NotifyUser(string message);
- 
- //add to separate smart contract
-  /// @notice When an account is whitelisted
-  event AddedToTheList(address account);
- 
- //add to separate smart contract
-  /// @notice When an account is removed from whitelist
-  event RemovedFromTheList(address account);
 
   /// @notice Creating an agreement and sending the deposit
   function createAgreement(
@@ -300,42 +267,6 @@ contract sendMoneyUntil is ProtectorWhitelisted{
 		commission = _newCommission;
 		emit NotifyUser("Commission changed");
 	}
-
-  //add to separate smart contract
-  /// @notice Adding address to the whitelist
-  function addToWhitelist(address _address) external onlyOwner {
-    whitelist[_address] = true;
-    emit AddedToTheList(_address);
-  }
-  
-  //add to separate smart contract
-  /// @notice Removing address from the whitelist
-  function removedFromWhitelist(address _address) external onlyOwner {
-    whitelist[_address] = false;
-    emit RemovedFromTheList(_address);
-  }
-  
-  //add to separate smart contract
-  /// @notice Checking if the address is whitelisted
-  function isWhitelisted(address _address) internal view returns(bool) {
-    return whitelist[_address];
-  }
-
-  //add to separate smart contract
-  /// @notice Checking if the address is whitelisted by the same address
-  function isWhitelistedExternal(address _address) external view onlyWhitelisted returns(bool) {
-    return whitelist[_address];
-  }
-
-  //add to separate smart contract
-  //create functionality that _nextInLine needs to be approved by multisig, if it's not, you can't change owner
-  /// @notice Changing the owner and the waitingToBeOwner
-  function changeOwner(address _nextInline) external {
-    require(waitingToBeOwner == msg.sender, "You don't have permissions");
-    require(waitingToBeOwner != _nextInline);
-    owner = waitingToBeOwner;
-    waitingToBeOwner = _nextInline;
-  }
 
 
  fallback() external {}
