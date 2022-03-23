@@ -147,7 +147,7 @@ contract sendMoneyUntil is ProtectorWhitelisted{
     if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
       //if the deadline wasn't breached
       if (exactAgreement[_id].deadline > block.timestamp){
-        //if the amount sent wasn't enough
+        //if the amount sent was enough
         if (exactAgreement[_id].amount <= msg.value){
           //storing the amount sent subtracted by commission
           uint256 changedAmount;
