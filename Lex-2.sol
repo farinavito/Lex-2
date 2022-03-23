@@ -4,7 +4,9 @@ pragma solidity 0.8.11;
 /// @title Implementing a legal contract: Person A commits sending X amount to person B until Y date.
 /// @author Farina Vito
 
-contract sendMoneyUntil {
+//import "https://github.com/farinavito/ProtectSmartContracts/blob/main/project/ProtectorWhitelisted/contracts/protector3.sol";
+
+contract sendMoneyUntil is ProtectorWhitelisted{
     /// @notice Defining the agreement 
     /// @param id A unique identifier of the agreement
     /// @param signee The person who commits sending the money to the receiver 
