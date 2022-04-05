@@ -91,6 +91,12 @@ contract sendMoneyUntil {
   /// @notice After other event than Terminated happens, emit it and send a message
   event NotifyUser(string message);
 
+  AddressProtector public accessingProtectors;
+
+  constructor(address _address) {
+    accessingProtectors = AddressProtector(_address);
+  }
+
   /// @notice Creating an agreement and sending the deposit
   function createAgreement(
     address payable _receiver, 
@@ -237,7 +243,8 @@ contract sendMoneyUntil {
   }
   
   /// @notice The owner withdrawing the money that belongs to his address
-  function withdrawAsTheOwner() external payable noReentrant onlyWhitelisted{
+  function withdrawAsTheOwner() external payable noReentrant {
+    require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
 		require(withdrawal_amount_owner > 0, "There aren't any funds to withdraw");
     (bool sent, ) = msg.sender.call{value: withdrawal_amount_owner}("");
     require(sent, "Failed to send Ether");
@@ -258,12 +265,14 @@ contract sendMoneyUntil {
   }
 
   /// @notice Return the withdrawal amount of the owner
-  function getWithdrawalOwner() external view onlyWhitelisted returns(uint256){
+  function getWithdrawalOwner() external view returns(uint256){
+    require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
     return withdrawal_amount_owner;
   }
   
   /// @notice Changing the commission
-  function changeCommission(uint256 _newCommission) external onlyWhitelisted {
+  function changeCommission(uint256 _newCommission) external {
+    require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
 		require(_newCommission > 0 && _newCommission < 10*15 + 1, "Commission doesn't follow the rules");
 		commission = _newCommission;
 		emit NotifyUser("Commission changed");
