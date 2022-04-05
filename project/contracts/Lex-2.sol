@@ -5,6 +5,7 @@ pragma solidity 0.8.11;
 /// @author Farina Vito
 
 //import "https://github.com/farinavito/ProtectSmartContracts/blob/main/project/AddressProtector/contracts/protector.sol";
+import "farinavito/ProtectSmartContracts@1.0.0/project/AddressProtector/contracts/protector.sol";
 
 contract sendMoneyUntil {
     /// @notice Defining the agreement 
