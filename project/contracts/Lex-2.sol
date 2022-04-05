@@ -6,7 +6,7 @@ pragma solidity 0.8.11;
 
 //import "https://github.com/farinavito/ProtectSmartContracts/blob/main/project/ProtectorWhitelisted/contracts/protector3.sol";
 
-contract sendMoneyUntil is ProtectorWhitelisted(){
+contract sendMoneyUntil {
     /// @notice Defining the agreement 
     /// @param id A unique identifier of the agreement
     /// @param signee The person who commits sending the money to the receiver 
