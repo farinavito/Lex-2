@@ -253,13 +253,7 @@ def test_sendPayment_value_larger_amount_withdrawal_amount_owner_increased(deplo
     deploy_addressProtector.addToWhitelist(accounts[7], {'from': accounts[1]}) 
     assert deploy.getWithdrawalOwner({'from': accounts[7]}) == 2*commission
 
-@pytest.mark.parametrize("value_sent",  [amount_sent, more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
-def test_sendPayment_value_larger_amount_send_value_totalEtherCommited_increased(deploy, value_sent):
-    '''check if totalEtherCommited increases'''
-    allEth = deploy.totalEtherCommited()
-    #deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
-    assert deploy.totalEtherCommited() == allEth + (value_sent - commission)
+
 
 
 #fails
@@ -273,6 +267,13 @@ def test_sendPayment_value_large_amount_send_value_check_signee_returned_excess(
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
     assert accounts[signee].balance() == balance_signee - value_sent + (value_sent - deploy.exactAgreement(agreements_number)[3])
 @pytest.mark.aaa
+@pytest.mark.parametrize("value_sent",  [amount_sent, more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_larger_amount_send_value_totalEtherCommited_increased(deploy, value_sent):
+    '''check if totalEtherCommited increases'''
+    allEth = deploy.totalEtherCommited()
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    assert deploy.totalEtherCommited() == allEth + (value_sent - commission)
+
 def test_sendPayment_value_large_amount_send_value_check_signee(deploy):
     '''check if the deposit is returned to the signee'''
     balance_signee = accounts[signee].balance() 
