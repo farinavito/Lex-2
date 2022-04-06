@@ -114,7 +114,7 @@ def test_new_agreement_fails_require(deploy):
         deploy.createAgreement('0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2', 2, 500, 5, startAgreement, {'from': accounts[signee], 'value': amount_sent})
     except Exception as e:
         assert e.message[50:] == 'The period of the payment is greater than the duration of the contract'
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("possibilities", [[0, 10], [10, 0], [0, 0]])
 def test_new_agreement_fails_require_larger_than_zero(possibilities, deploy):
     '''check if the creation of the new agreement fails, because the input data should be larger than 0'''
@@ -133,13 +133,13 @@ def test_new_agreement_fails_require_msg_value_larger_than_amount(deploy, _amoun
         deploy.createAgreement(accounts[receiver], amount_sent, every_period, agreement_duration, startAgreement, {'from': accounts[signee], 'value': _amount})
     except Exception as e:
             assert e.message[50:] == 'Deposit has to be at least the size of the amount'
-
-def test_new_agreement_fails_require_agreementStart_larger_than_block_timestamp(deploy):
-    '''check if the creation of the new agreement fails, because the _startOfTheAgreement should be larger than block.amount'''
+@pytest.mark.aaa
+def test_new_agreement_fails_require_agreementStart_larger_than_deadline(deploy):
+    '''check if the creation of the new agreement fails, because the _deadline should be larger than block.amount'''
     try:
         chain = Chain()
         now = chain.time()
-        startAgreement = now - 10000
-        deploy.createAgreement(accounts[receiver], amount_sent, every_period, agreement_duration, startAgreement, {'from': accounts[signee], 'value': amount_sent})
+        endAgreement = now - 10000
+        deploy.createAgreement(accounts[receiver], amount_sent, endAgreement, {'from': accounts[signee], 'value': deposit})
     except Exception as e:
             assert e.message[50:] == "The agreement can't be created in the past"
