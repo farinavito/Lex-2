@@ -71,35 +71,35 @@ def new_agreement_2(deploy, module_isolation):
 '''TESTING CREATEAGREEMENT AGREEMENT 1'''
 
 
-@pytest.mark.aaa
+
 def test_exactAgreement_id(deploy):
     '''check if the first id of the agreement is zero'''
     assert deploy.exactAgreement(agreements_number)[0] == str(agreements_number)
-@pytest.mark.aaa
+
 def test_exactAgreement_signee(deploy):
     '''check if the first address of the agreement's signee is the same as the signee'''
     assert deploy.exactAgreement(agreements_number)[1] == accounts[signee]
-@pytest.mark.aaa
+
 def test_exactAgreement_receiver(deploy):
     '''check if the first address of the agreement's receiver is the same as the accounts[0]'''
     assert deploy.exactAgreement(agreements_number)[2] == accounts[receiver]
-@pytest.mark.aaa
+
 def test_exactAgreement_amount(deploy):
     '''check if the amount of the agreement is 2'''
     assert deploy.exactAgreement(agreements_number)[3] == amount_sent  
-@pytest.mark.aaa
+
 def test_exactAgreement_deposit(deploy):
     '''check if the initial amount of the deposit is amount_sent'''
     assert deploy.exactAgreement(agreements_number)[4] == deposit
-@pytest.mark.aaa
+
 def test_exactAgreement_initialize_transactionCreated(deploy):
     '''check if the transactionCreated is 0'''
     assert deploy.exactAgreement(agreements_number)[5] == '0'
-@pytest.mark.aaa
+
 def test_exactAgreement_status(deploy):
     '''check if the initial status is equal to "Created"'''
     assert deploy.exactAgreement(agreements_number)[6] == 'Created'
-@pytest.mark.aaa
+
 def test_exactAgreement_time_duration(deploy):
     '''check if the initial agreement duration'''
     assert deploy.exactAgreement(agreements_number)[7] == agreement_duration
@@ -114,18 +114,14 @@ def test_new_agreement_fails_require(deploy):
         deploy.createAgreement('0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2', 2, 500, 5, startAgreement, {'from': accounts[signee], 'value': amount_sent})
     except Exception as e:
         assert e.message[50:] == 'The period of the payment is greater than the duration of the contract'
-
-@pytest.mark.parametrize("possibilities", [[0, 10, 15], [10, 0, 15], [10, 10, 0], [0, 0, 15], [10, 0, 0], [0, 10, 0], [0, 0, 0]])
+@pytest.mark.aaa
+@pytest.mark.parametrize("possibilities", [[0, 10], [10, 0], [0, 0]])
 def test_new_agreement_fails_require_larger_than_zero(possibilities, deploy):
     '''check if the creation of the new agreement fails, because the input data should be larger than 0'''
-    for _ in range(7):
-        try:
-            chain = Chain()
-            now = chain.time()
-            startAgreement = now + 10000
-            deploy.createAgreement('0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2', possibilities[0], possibilities[1], possibilities[2], startAgreement, {'from': accounts[signee], 'value': amount_sent})
-        except Exception as e:
-            assert e.message[50:] == 'All input data must be larger than 0'
+    try:
+        deploy.createAgreement('0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2', possibilities[0], possibilities[1], {'from': accounts[signee], 'value': deposit})
+    except Exception as e:
+        assert e.message[50:] == 'All input data must be larger than 0'
 
 @pytest.mark.parametrize("_amount", [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])    
 def test_new_agreement_fails_require_msg_value_larger_than_amount(deploy, _amount):
@@ -133,7 +129,7 @@ def test_new_agreement_fails_require_msg_value_larger_than_amount(deploy, _amoun
     try:
         chain = Chain()
         now = chain.time()
-        startAgreement = now + 10000
+        startAgreement = now + 10000 
         deploy.createAgreement(accounts[receiver], amount_sent, every_period, agreement_duration, startAgreement, {'from': accounts[signee], 'value': _amount})
     except Exception as e:
             assert e.message[50:] == 'Deposit has to be at least the size of the amount'
