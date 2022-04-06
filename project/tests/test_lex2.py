@@ -228,26 +228,13 @@ def test_sendPayments_fails_require_wrong_address_pair(deploy, accounts_number):
 
 #Checking when the agreement's status is "Created" and was sent on time and the amount sent was enough
 
-
-
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_larger_amount_withdrawal_amount_owner(deploy, deploy_addressProtector,value_sent):
     '''check if withdrawal_amount_owner is correctly initialized'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
     deploy_addressProtector.addToWhitelist(accounts[7], {'from': accounts[1]}) 
     assert deploy.getWithdrawalOwner({'from': accounts[7]}) == commission
-#fails, but with a reason - we don't have such functionality
 
-@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
-def test_sendPayment_value_larger_amount_withdrawal_amount_owner_increased(deploy, deploy_addressProtector, value_sent):
-    '''check if withdrawal_amount_owner is correctly increased'''
-    #deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
-    #deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent}) 
-    deploy_addressProtector.addToWhitelist(accounts[7], {'from': accounts[1]}) 
-    assert deploy.getWithdrawalOwner({'from': accounts[7]}) == 2*commission
-
-@pytest.mark.aaa
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_large_amount_send_value(deploy, value_sent):
     '''check if the msg.value is sent when amount <= msg.value'''
