@@ -29,6 +29,7 @@ less_than_agreement_duration = [agreement_duration - 10**2, agreement_duration -
 more_than_agreement_duration = [agreement_duration + 10**5, agreement_duration + 10**6, agreement_duration + 10**7]
 
 seconds_in_day = 60 * 60 * 24
+negative_values = [-1, -10, -100]
 
 protectorOwnerAddress = 1
 protectorWaitingToBeOwnerAddress = 2
@@ -104,17 +105,6 @@ def test_exactAgreement_time_duration(deploy):
     '''check if the initial agreement duration'''
     assert deploy.exactAgreement(agreements_number)[7] == agreement_duration
 
-def test_new_agreement_fails_require(deploy):
-    '''check if the new agreement fails, because howLong > _everyTimeUnit in the require statement'''
-    try:
-        chain = Chain()
-        now = chain.time()
-        startAgreement = now + 10000
-        #length of the agreement is longer than _everyTimeUnit
-        deploy.createAgreement('0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2', 2, 500, 5, startAgreement, {'from': accounts[signee], 'value': amount_sent})
-    except Exception as e:
-        assert e.message[50:] == 'The period of the payment is greater than the duration of the contract'
-
 @pytest.mark.parametrize("possibilities", [[0, 10], [10, 0], [0, 0]])
 def test_new_agreement_fails_require_larger_than_zero(possibilities, deploy):
     '''check if the creation of the new agreement fails, because the input data should be larger than 0'''
@@ -132,8 +122,8 @@ def test_new_agreement_fails_require_agreementStart_larger_than_deadline(deploy)
         deploy.createAgreement(accounts[receiver], amount_sent, endAgreement, {'from': accounts[signee], 'value': deposit})
     except Exception as e:
             assert e.message[50:] == "The agreement can't be created in the past"
-@pytest.mark.aaa   
-def test_new_agreement_fails_require_msg_value_larger_or_equal_to_zero(deploy, _amount):
+ 
+def test_new_agreement_fails_require_msg_value_larger_or_equal_to_zero(deploy):
     '''check if the creation of the new agreement fails, because the msg.value should be larger or equal to 100'''
     try:
         deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': 0})
