@@ -55,18 +55,19 @@ def deploy(sendMoneyUntil, module_isolation):
 def new_agreement(deploy, module_isolation):
     return deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     
-'''
+
 signee_2 = signee
 receiver_2 = receiver
-amount_sent_2 = 10**1
+amount_sent_2 = 10**5
+deposit_2 = 100
 agreement_duration_2 = 31556926 + 1649185494
 initial_howLong_2 = 364
-agreements_number_2 = 1
+agreements_number_2 = 2
 
 @pytest.fixture(autouse=True)
 def new_agreement_2(deploy, module_isolation):
-    return deploy.createAgreement(accounts[receiver_2], amount_sent_2, agreement_duration_2, {'from': accounts[signee_2], 'value': amount_sent_2})
-'''
+    return deploy.createAgreement(accounts[receiver_2], amount_sent_2, agreement_duration_2, {'from': accounts[signee_2], 'value': deposit_2})
+
 
 
 '''TESTING CREATEAGREEMENT AGREEMENT 1'''
@@ -130,3 +131,40 @@ def test_new_agreement_fails_require_msg_value_larger_or_equal_to_zero(deploy):
     except Exception as e:
             assert e.message[50:] == 'Deposit needs to be 10% of the amount or at least 100 wei'
 
+
+
+'''TESTING CREATEAGREEMENT FUNCTION AGREEMENT 2'''
+
+
+
+def test_exactAgreement_id(deploy):
+    '''check if the first id of the agreement is zero'''
+    assert deploy.exactAgreement(agreements_number_2)[0] == str(agreements_number_2)
+
+def test_exactAgreement_signee(deploy):
+    '''check if the first address of the agreement's signee is the same as the signee'''
+    assert deploy.exactAgreement(agreements_number_2)[1] == accounts[signee_2]
+
+def test_exactAgreement_receiver(deploy):
+    '''check if the first address of the agreement's receiver is the same as the accounts[0]'''
+    assert deploy.exactAgreement(agreements_number_2)[2] == accounts[receiver_2]
+
+def test_exactAgreement_amount(deploy):
+    '''check if the amount of the agreement is 2'''
+    assert deploy.exactAgreement(agreements_number_2)[3] == amount_sent_2  
+
+def test_exactAgreement_deposit(deploy):
+    '''check if the initial amount of the deposit is amount_sent'''
+    assert deploy.exactAgreement(agreements_number_2)[4] == deposit_2
+
+def test_exactAgreement_initialize_transactionCreated(deploy):
+    '''check if the transactionCreated is 0'''
+    assert deploy.exactAgreement(agreements_number_2)[5] == '0'
+
+def test_exactAgreement_status(deploy):
+    '''check if the initial status is equal to "Created"'''
+    assert deploy.exactAgreement(agreements_number_2)[6] == 'Created'
+
+def test_exactAgreement_time_duration(deploy):
+    '''check if the initial agreement duration'''
+    assert deploy.exactAgreement(agreements_number_2)[7] == agreement_duration_2
