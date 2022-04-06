@@ -228,13 +228,7 @@ def test_sendPayments_fails_require_wrong_address_pair(deploy, accounts_number):
 
 #Checking when the agreement's status is "Created" and was sent on time and the amount sent was enough
 
-@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
-def test_sendPayment_value_large_amount_send_value(deploy, value_sent):
-    '''check if the msg.value is sent when amount <= msg.value'''
-    balance_receiver = accounts[receiver].balance() 
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
-    deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-    assert accounts[receiver].balance() == balance_receiver + value_sent - commission
+
 
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_larger_amount_withdrawal_amount_owner(deploy, deploy_addressProtector,value_sent):
@@ -253,11 +247,15 @@ def test_sendPayment_value_larger_amount_withdrawal_amount_owner_increased(deplo
     deploy_addressProtector.addToWhitelist(accounts[7], {'from': accounts[1]}) 
     assert deploy.getWithdrawalOwner({'from': accounts[7]}) == 2*commission
 
-
-
-
-#fails
 @pytest.mark.aaa
+@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_large_amount_send_value(deploy, value_sent):
+    '''check if the msg.value is sent when amount <= msg.value'''
+    balance_receiver = accounts[receiver].balance() 
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
+    assert accounts[receiver].balance() == balance_receiver + value_sent - commission
+
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_large_amount_send_value_check_signee_returned_excess(deploy, value_sent):
     '''check if the excess money is returned to the signee when he sends more than he should'''
