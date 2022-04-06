@@ -152,7 +152,7 @@ contract sendMoneyUntil {
 
   /// @notice Sending the payment based on the status of the agreement
   function sendPayment(uint256 _id) external payable {
-    require(exactAgreement[_id].signee == msg.sender, "Only the owner can pay the agreement's terms");
+    require(exactAgreement[_id].signee == msg.sender, "Only the signee can pay the agreement's terms");
     if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
       //if the deadline wasn't breached
       if (exactAgreement[_id].deadline > block.timestamp){
