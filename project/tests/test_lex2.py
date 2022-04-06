@@ -42,14 +42,10 @@ addressProtector5 = 7
 @pytest.fixture()
 def deploy_addressProtector(AddressProtector, module_isolation):
     return AddressProtector.deploy(accounts[protectorOwnerAddress], accounts[protectorWaitingToBeOwnerAddress], accounts[addressProtector1], accounts[addressProtector2], accounts[addressProtector3], accounts[addressProtector4], accounts[addressProtector5], {'from': accounts[0]})
-'''
+
 @pytest.fixture()
 def deploy(sendMoneyUntil, deploy_addressProtector, module_isolation):
     return sendMoneyUntil.deploy(deploy_addressProtector, {'from': accounts[0]})
-'''
-@pytest.fixture()
-def deploy(sendMoneyUntil, module_isolation):
-    return sendMoneyUntil.deploy({'from': accounts[0]})
 
 @pytest.fixture(autouse=True)
 def new_agreement(deploy, module_isolation):
@@ -229,3 +225,8 @@ def test_sendPayments_fails_require_wrong_address_pair(deploy, accounts_number):
         deploy.sendPayment(agreements_number, {'from': accounts[accounts_number], 'value': amount_sent})
     except Exception as e:
         assert e.message[50:] != "Only the signee can pay the agreement's terms"
+
+#Checking when the agreement's status is "Created" and was sent on time and the amount sent was enough
+
+
+
