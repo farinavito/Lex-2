@@ -177,3 +177,17 @@ def test_exactAgreement_status(deploy):
 def test_exactAgreement_time_duration(deploy):
     '''check if the initial agreement duration'''
     assert deploy.exactAgreement(agreements_number_2)[7] == agreement_duration_2
+
+
+
+'''TESTING MYSENDERAGREEMENTS FUNCTION'''
+
+
+@pytest.mark.aaa
+def test_mySenderAgreements_emits_correct_id_accounts_1(deploy):
+    '''check if the mapping mySenderAgreements emits correct agreementId for the first element in the mapping of address signee'''
+    assert deploy.mySenderAgreements(accounts[signee], 0) == '1'
+@pytest.mark.aaa
+def test_mySenderAgreements_emits_correct_id_accounts_2(deploy):
+    '''check if the mapping mySenderAgreements is returning correctly the ids'''
+    assert deploy.mySenderAgreements(accounts[signee], 1) == '2'
