@@ -211,7 +211,7 @@ def test_myReceiverAgreements_emits_correct_id_agreement_2(deploy):
 '''TESTING SENDPAYMENT, INITIALIZINGPOSITIONPERIOD AND TIMENOTBREACHED FUNCTIONS'''
 
 
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("accounts_number", [without_signee[0], without_signee[1], without_signee[2]])
 def test_sendPayments_fails_require_wrong_address(deploy, accounts_number):
     '''check if the sendPayments fails, because exactAgreement[_id].signee == msg.sender in the require statement'''
@@ -220,3 +220,12 @@ def test_sendPayments_fails_require_wrong_address(deploy, accounts_number):
         deploy.sendPayment(agreements_number, {'from': accounts[accounts_number], 'value': amount_sent})
     except Exception as e:
         assert e.message[50:] == "Only the signee can pay the agreement's terms"
+@pytest.mark.aaa
+@pytest.mark.parametrize("accounts_number", [signee])
+def test_sendPayments_fails_require_wrong_address_pair(deploy, accounts_number):
+    '''check if the sendPayments doesn't fail, because exactAgreement[_id].signee == msg.sender in the require statement'''
+    try:
+        #right signer's address
+        deploy.sendPayment(agreements_number, {'from': accounts[accounts_number], 'value': amount_sent})
+    except Exception as e:
+        assert e.message[50:] != "Only the signee can pay the agreement's terms"
