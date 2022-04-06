@@ -216,7 +216,7 @@ def test_sendPayments_fails_require_wrong_address(deploy, accounts_number):
         deploy.sendPayment(agreements_number, {'from': accounts[accounts_number], 'value': amount_sent})
     except Exception as e:
         assert e.message[50:] == "Only the signee can pay the agreement's terms"
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("accounts_number", [signee])
 def test_sendPayments_fails_require_wrong_address_pair(deploy, accounts_number):
     '''check if the sendPayments doesn't fail, because exactAgreement[_id].signee == msg.sender in the require statement'''
@@ -227,6 +227,61 @@ def test_sendPayments_fails_require_wrong_address_pair(deploy, accounts_number):
         assert e.message[50:] != "Only the signee can pay the agreement's terms"
 
 #Checking when the agreement's status is "Created" and was sent on time and the amount sent was enough
+@pytest.mark.aaa
+@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_large_amount_send_value(deploy, value_sent):
+    '''check if the msg.value is sent when amount <= msg.value in the timeNotBreached'''
+    balance_receiver = accounts[receiver].balance() 
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
+    assert accounts[receiver].balance() == balance_receiver + value_sent - commission
 
+@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_larger_amount_withdrawal_amount_owner(deploy, deploy_addressProtector,value_sent):
+    '''check if withdrawal_amount_owner is correctly initialized'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy_addressProtector.addToWhitelist(accounts[7], {'from': accounts[1]}) 
+    assert deploy.getWithdrawalOwner({'from': accounts[7]}) == commission
 
+@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_larger_amount_withdrawal_amount_owner_increased(deploy, deploy_addressProtector, value_sent):
+    '''check if withdrawal_amount_owner is correctly increased'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent}) 
+    deploy_addressProtector.addToWhitelist(accounts[7], {'from': accounts[1]}) 
+    assert deploy.getWithdrawalOwner({'from': accounts[7]}) == 2*commission
+
+@pytest.mark.parametrize("value_sent",  [amount_sent, more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_larger_amount_send_value_totalEtherCommited_increased(deploy, value_sent):
+    '''check if totalEtherCommited increases'''
+    allEth = deploy.totalEtherCommited()
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    assert deploy.totalEtherCommited() == allEth + (value_sent - commission)
+
+@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_large_amount_send_value_check_signee(deploy, value_sent):
+    '''check if the balance of the signee is changed when amount <= msg.value in the timeNotBreached'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    balance_signee = accounts[signee].balance() 
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent}) 
+    assert accounts[signee].balance() == balance_signee - value_sent
+
+@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_sendPayment_value_large_amount_send_value_check_signee_returned_excess(deploy, value_sent):
+    '''check if the excess money is returned to the signee when he sends more than he should'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    balance_signee = accounts[signee].balance() 
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
+    assert accounts[signee].balance() == balance_signee - value_sent + (value_sent - deploy.exactAgreement(agreements_number)[3])
+
+def test_sendPayment_value_large_amount_emit_NotifyUser(deploy):
+    '''check if the event NotifyUser is emitted when amount <= msg.value in the timeNotBreached'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    #the contract has been activated, now send the money again
+    function_initialize = deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    assert function_initialize.events[0][0]['message'] == "Transaction was sent to the receiver"
 
