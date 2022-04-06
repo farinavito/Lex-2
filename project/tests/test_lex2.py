@@ -123,17 +123,6 @@ def test_new_agreement_fails_require_larger_than_zero(possibilities, deploy):
     except Exception as e:
         assert e.message[50:] == 'All input data must be larger than 0'
 
-@pytest.mark.parametrize("_amount", [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])    
-def test_new_agreement_fails_require_msg_value_larger_than_amount(deploy, _amount):
-    '''check if the creation of the new agreement fails, because the msg.value should be larger or equal to amount sent'''
-    try:
-        chain = Chain()
-        now = chain.time()
-        startAgreement = now + 10000 
-        deploy.createAgreement(accounts[receiver], amount_sent, every_period, agreement_duration, startAgreement, {'from': accounts[signee], 'value': _amount})
-    except Exception as e:
-            assert e.message[50:] == 'Deposit has to be at least the size of the amount'
-@pytest.mark.aaa
 def test_new_agreement_fails_require_agreementStart_larger_than_deadline(deploy):
     '''check if the creation of the new agreement fails, because the _deadline should be larger than block.amount'''
     try:
@@ -143,3 +132,11 @@ def test_new_agreement_fails_require_agreementStart_larger_than_deadline(deploy)
         deploy.createAgreement(accounts[receiver], amount_sent, endAgreement, {'from': accounts[signee], 'value': deposit})
     except Exception as e:
             assert e.message[50:] == "The agreement can't be created in the past"
+@pytest.mark.aaa   
+def test_new_agreement_fails_require_msg_value_larger_or_equal_to_zero(deploy, _amount):
+    '''check if the creation of the new agreement fails, because the msg.value should be larger or equal to 100'''
+    try:
+        deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': 0})
+    except Exception as e:
+            assert e.message[50:] == 'Deposit needs to be 10% of the amount or at least 100 wei'
+
