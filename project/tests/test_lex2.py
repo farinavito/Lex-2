@@ -11,9 +11,10 @@ commission = 1
 signee = 1
 receiver = 9
 amount_sent = 10**10
+deposit = 100
 agreement_duration = 2629743 + 1649185494
 initial_howLong = 30
-agreements_number = 0
+agreements_number = 1
 
 
 without_signee = [signee + 1, signee + 2, signee + 3]
@@ -42,7 +43,7 @@ def deploy_addressProtector(AddressProtector, module_isolation):
     return AddressProtector.deploy(accounts[protectorOwnerAddress], accounts[protectorWaitingToBeOwnerAddress], accounts[addressProtector1], accounts[addressProtector2], accounts[addressProtector3], accounts[addressProtector4], accounts[addressProtector5], {'from': accounts[0]})
 '''
 @pytest.fixture()
-def deploy(sendMoneyUntil, module_isolation):
+def deploy(sendMoneyUntil, deploy_addressProtector, module_isolation):
     return sendMoneyUntil.deploy(deploy_addressProtector, {'from': accounts[0]})
 '''
 @pytest.fixture()
@@ -51,9 +52,9 @@ def deploy(sendMoneyUntil, module_isolation):
 
 @pytest.fixture(autouse=True)
 def new_agreement(deploy, module_isolation):
-    return deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': amount_sent})
+    return deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     
-
+'''
 signee_2 = signee
 receiver_2 = receiver
 amount_sent_2 = 10**1
@@ -64,7 +65,7 @@ agreements_number_2 = 1
 @pytest.fixture(autouse=True)
 def new_agreement_2(deploy, module_isolation):
     return deploy.createAgreement(accounts[receiver_2], amount_sent_2, agreement_duration_2, {'from': accounts[signee_2], 'value': amount_sent_2})
-
+'''
 
 
 '''TESTING CREATEAGREEMENT AGREEMENT 1'''
@@ -89,7 +90,7 @@ def test_exactAgreement_amount(deploy):
 @pytest.mark.aaa
 def test_exactAgreement_deposit(deploy):
     '''check if the initial amount of the deposit is amount_sent'''
-    assert deploy.exactAgreement(agreements_number)[4] == amount_sent
+    assert deploy.exactAgreement(agreements_number)[4] == deposit
 @pytest.mark.aaa
 def test_exactAgreement_initialize_transactionCreated(deploy):
     '''check if the transactionCreated is 0'''
@@ -99,9 +100,9 @@ def test_exactAgreement_status(deploy):
     '''check if the initial status is equal to "Created"'''
     assert deploy.exactAgreement(agreements_number)[6] == 'Created'
 @pytest.mark.aaa
-def test_exactAgreement_time_creation(deploy):
+def test_exactAgreement_time_duration(deploy):
     '''check if the initial agreement duration'''
-    assert deploy.exactAgreement(agreements_number)[7] == seconds_in_day * initial_howLong
+    assert deploy.exactAgreement(agreements_number)[7] == agreement_duration
 
 def test_new_agreement_fails_require(deploy):
     '''check if the new agreement fails, because howLong > _everyTimeUnit in the require statement'''

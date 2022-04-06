@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
+pragma solidity ^0.8.11;
 
 /// @title Implementing a legal contract: Person A commits sending X amount to person B until Y date.
 /// @author Farina Vito
@@ -106,7 +106,9 @@ contract sendMoneyUntil {
     ) external payable {
         require(_amount > 0 && _deadline > 0, "All input data must be larger than 0");
         require(_deadline >= block.timestamp, "The agreement can't be created in the past");
+        require(msg.value >= 0, "msg.value is zero");
         //rule for the deposit -> min is 100 wei, if larger _amount, deposit is 10% of the _amount -> bp 10
+        
         uint256 storeDeposit;
         uint256 minDeposit = 100;
         if (msg.value >= 1000){
@@ -117,7 +119,7 @@ contract sendMoneyUntil {
         }
 
         require(msg.value >= storeDeposit, "Deposit needs to be 10% of the amount or at least 100 wei");
-
+        
         //increment the agreement id
         uint256 agreementId = numAgreement++;
         //creating a new agreement
