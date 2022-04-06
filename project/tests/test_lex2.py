@@ -183,11 +183,25 @@ def test_exactAgreement_time_duration(deploy):
 '''TESTING MYSENDERAGREEMENTS FUNCTION'''
 
 
-@pytest.mark.aaa
+
 def test_mySenderAgreements_emits_correct_id_accounts_1(deploy):
     '''check if the mapping mySenderAgreements emits correct agreementId for the first element in the mapping of address signee'''
     assert deploy.mySenderAgreements(accounts[signee], 0) == '1'
-@pytest.mark.aaa
+
 def test_mySenderAgreements_emits_correct_id_accounts_2(deploy):
     '''check if the mapping mySenderAgreements is returning correctly the ids'''
     assert deploy.mySenderAgreements(accounts[signee], 1) == '2'
+
+
+
+'''TESTING MYRECEIVERAGREEMENTS FUNCTION'''
+
+
+
+def test_myReceiverAgreements_emits_correct_id_agreement_1(deploy):
+    '''check if the mapping myReceiverAgreements emits correct agreementId for the first element in the mapping of address 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2'''
+    assert deploy.myReceiverAgreements(accounts[receiver], 0) == '1'
+
+def test_myReceiverAgreements_emits_correct_id_agreement_2(deploy):
+    '''check if the mapping myReceiverAgreements is returning correctly the ids'''
+    assert deploy.myReceiverAgreements(accounts[receiver], 1) == '2'
