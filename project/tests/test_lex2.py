@@ -261,13 +261,7 @@ def test_sendPayment_value_larger_amount_send_value_totalEtherCommited_increased
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
     assert deploy.totalEtherCommited() == allEth + (value_sent - commission)
 
-@pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
-def test_sendPayment_value_large_amount_send_value_check_signee(deploy, value_sent):
-    '''check if the balance of the signee is changed when amount <= msg.value in the timeNotBreached'''
-    #deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
-    balance_signee = accounts[signee].balance() 
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent}) 
-    assert accounts[signee].balance() == balance_signee - value_sent
+
 #fails
 
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
@@ -279,6 +273,13 @@ def test_sendPayment_value_large_amount_send_value_check_signee_returned_excess(
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
     assert accounts[signee].balance() == balance_signee - value_sent + (value_sent - deploy.exactAgreement(agreements_number)[3])
 @pytest.mark.aaa
+def test_sendPayment_value_large_amount_send_value_check_signee(deploy):
+    '''check if the deposit is returned to the signee'''
+    balance_signee = accounts[signee].balance() 
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
+    assert accounts[signee].balance() + amount_sent  == balance_signee + deposit
+
 def test_sendPayment_value_large_amount_status_Terminated(deploy):
     '''check if the status is changed to Terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
