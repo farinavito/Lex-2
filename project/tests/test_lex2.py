@@ -130,7 +130,14 @@ def test_new_agreement_fails_require_msg_value_larger_or_equal_to_zero(deploy):
         deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': 0})
     except Exception as e:
             assert e.message[50:] == 'Deposit needs to be 10% of the amount or at least 100 wei'
-
+@pytest.mark.aaa
+@pytest.mark.parametrize("_amount", [1, 10, 80, 99])
+def test_new_agreement_fails_require_msg_value_larger_or_equal_to_zero_2(deploy, _amount):
+    '''check if the creation of the new agreement fails, because the msg.value should be larger or equal to 100'''
+    try:
+        deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': _amount})
+    except Exception as e:
+            assert e.message[50:] == 'Deposit needs to be 10% of the amount or at least 100 wei'
 
 
 '''TESTING CREATEAGREEMENT FUNCTION AGREEMENT 2'''
