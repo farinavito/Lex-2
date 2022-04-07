@@ -275,3 +275,13 @@ def test_sendPayment_value_large_amount_emit_NotifyUser(deploy):
     function_initialize = deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     assert function_initialize.events[0][0]['message'] == "Transaction was sent to the receiver"
 
+#if msg.value < amount_sent
+@pytest.mark.aaa
+@pytest.mark.parametrize("value_sent",  [amount_sent])
+@pytest.mark.parametrize("value_decreased",  [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])
+def test_timeNotBreached_value_large_amount_send_value_withdraw_signee(deploy, value_sent, value_decreased):
+    '''check if the msg.value is not sent when amount >= msg.value in the timeNotBreached, the funds are returned to the signee'''
+    balance_signee = accounts[signee].balance() 
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent - value_decreased})
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
+    assert accounts[signee].balance() == balance_signee
