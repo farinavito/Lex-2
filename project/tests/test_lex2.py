@@ -312,7 +312,7 @@ def test_sendPayment_received_on_time_false_send_deposit(deploy, seconds_sleep):
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent}) 
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == balance_receiver + deposit
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_totalDepositSent(deploy, seconds_sleep):
     '''check if totalDepositSent increases by the deposit'''
@@ -322,3 +322,21 @@ def test_sendPayment_received_on_time_false_totalDepositSent(deploy, seconds_sle
     chain.sleep(seconds_sleep)
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
     assert deploy.totalDepositSent() == depositsTogether + agreementsdeposit
+
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_received_on_time_false_deposit_equals_zero(deploy, seconds_sleep):
+    '''check if the deposit is equal zero when transaction is sent past the agreement's duration'''
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
+    assert deploy.exactAgreement(agreements_number)[5] == "0"
+@pytest.mark.aaa
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_received_on_time_false_return_transaction(deploy, seconds_sleep):
+    '''check if the transaction is sent back to the signee when transaction is sent past the agreement's duration'''
+    balance_signee = accounts[signee].balance() 
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    assert accounts[signee].balance() == balance_signee
