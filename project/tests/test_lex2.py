@@ -279,16 +279,26 @@ def test_sendPayment_value_large_amount_emit_NotifyUser(deploy):
 
 @pytest.mark.parametrize("value_sent",  [amount_sent])
 @pytest.mark.parametrize("value_decreased",  [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])
-def test_timeNotBreached_value_large_amount_send_value_withdraw_signee(deploy, value_sent, value_decreased):
+def test_sendPayment_value_large_amount_send_value_withdraw_signee(deploy, value_sent, value_decreased):
     '''check if the msg.value is not sent when amount >= msg.value in the sendPayment, the funds are returned to the signee'''
     balance_signee = accounts[signee].balance() 
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent - value_decreased})
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
     assert accounts[signee].balance() == balance_signee
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("value_sent",  [amount_sent])
 @pytest.mark.parametrize("value_decreased",  [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])
-def test_timeNotBreached_value_large_amount_send_value_pair_event(deploy, value_sent, value_decreased):
+def test_sendPayment_value_large_amount_send_value_pair_event(deploy, value_sent, value_decreased):
     '''check if the msg.value is not sent when amount <= msg.value sendPayment, the contract terminates'''
     function_initialized = deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent - value_decreased}) 
     assert function_initialized.events[0][0]['message'] == "The amount sent is lower than in the agreement"
+
+#if the transaction wasn't sent on time
+@pytest.mark.aaa
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_received_on_time_false_status_terminated(deploy, seconds_sleep):
+    '''check if the agreement is terminated, when transactionCreated > positionPeriod'''
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    assert deploy.exactAgreement(agreements_number)[6] == 'Terminated'
