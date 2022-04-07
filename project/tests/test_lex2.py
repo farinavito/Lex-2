@@ -294,11 +294,21 @@ def test_sendPayment_value_large_amount_send_value_pair_event(deploy, value_sent
     assert function_initialized.events[0][0]['message'] == "The amount sent is lower than in the agreement"
 
 #if the transaction wasn't sent on time
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_status_terminated(deploy, seconds_sleep):
-    '''check if the agreement is terminated, when transactionCreated > positionPeriod'''
+    '''check if the agreement is terminated, when transaction is sent past the agreement's duration'''
     chain = Chain()
     chain.sleep(seconds_sleep)
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     assert deploy.exactAgreement(agreements_number)[6] == 'Terminated'
+@pytest.mark.aaa
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_breached_on_time_false_send_deposit(deploy, seconds_sleep):
+    '''check if the deposit is sent to the receiver when transaction is sent past the agreement's duration'''
+    balance_receiver = accounts[receiver].balance() 
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent}) 
+    deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
+    assert accounts[receiver].balance() == balance_receiver + deposit
