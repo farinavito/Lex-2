@@ -457,18 +457,17 @@ def test_withdrawAsTheReceiver_second_reguire_fails_case_1(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].receiver] > 0 fails'''
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-@pytest.mark.aaa
+
 def test_withdrawAsTheReceiver_second_reguire_fails_case_2(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].receiver] > 0 fails'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-
+@pytest.mark.aaa
 def test_withdrawAsTheReceiver_withdrawal_sent(deploy):
     '''Check if the withdrawal was sent to receiver'''
     receiver_balance = accounts[receiver].balance()
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == receiver_balance + amount_sent - commission
