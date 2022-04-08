@@ -398,25 +398,25 @@ def test_wasContractBreached_after_agreements_duration_status_terminated(deploy,
     chain.sleep(seconds_sleep)
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert deploy.exactAgreement(agreements_number)[6] == 'Terminated'
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_wasContractBreached_after_agreements_duration_send_deposit(deploy, seconds_sleep):
-    '''check if the wasContractBreached returns deposit tot he receiver after agreement's duration period'''
+    '''check if the wasContractBreached returns deposit to the receiver after agreement's duration period'''
     balance_receiver = accounts[receiver].balance() 
     chain = Chain()
     chain.sleep(seconds_sleep)
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == balance_receiver + deposit
-
+@pytest.mark.aaa
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_sendPayment_received_on_time_false_totalDepositSent(deploy, seconds_sleep):
+def test_wasContractBreached_after_agreements_duration_totalDepositSent(deploy, seconds_sleep):
     '''check if totalDepositSent increases by the deposit'''
     depositsTogether = deploy.totalDepositSent()
     agreementsdeposit = deploy.exactAgreement(agreements_number)[4]
     chain = Chain()
     chain.sleep(seconds_sleep)
-    deploy.sendPayment(3, {'from': accounts[signee], 'value': amount_sent}) 
+    deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert deploy.totalDepositSent() == depositsTogether + agreementsdeposit
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
