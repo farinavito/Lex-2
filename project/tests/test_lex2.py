@@ -353,8 +353,8 @@ def test_sendPayment_received_on_time_false_emit_Terminated(deploy, seconds_slee
 
 #Checking when the agreement's status is "Terminated"
 
-@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_terminateContract_emit_Terminated_initial_status_terminated(deploy, seconds_sleep):
+
+def test_terminateContract_emit_Terminated_initial_status_terminated(deploy):
     '''check if the sendPayments emits correctly the message when the status is "Terminated"'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     with brownie.reverts("The agreement is already terminated"):
@@ -380,13 +380,21 @@ def test_wasContractBreached_require_receiver_equals_wrong_account_2(deploy, wro
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
 
 @pytest.mark.parametrize("right_accounts",  [receiver])
-def test_wasContractBreached_status_terminated(deploy, right_accounts):
+def test_wasContractBreached_already_terminated_status_terminated(deploy, right_accounts):
     '''check if the wasContractBreached's status terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[right_accounts]})
     assert function_initialize.events[0][0]['message'] == "The agreement is already terminated"
-@pytest.mark.aaa
+
 def test_wasContractBreached_before_agreements_duration(deploy):
     '''check if the wasContractBreached called before agreement's duration period'''
     function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert function_initialize.events[0][0]['message'] == "The agreement wasn't breached"
+@pytest.mark.aaa
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_wasContractBreached_after_agreements_duration_status_terminated(deploy, seconds_sleep):
+    '''check if the wasContractBreached's status is terminated after agreement's duration period'''
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
+    assert deploy.exactAgreement(agreements_number)[6] == 'Terminated'
