@@ -484,22 +484,19 @@ def test_withdrawAsTheSignee_first_reguire_fails(deploy, wrong_account):
     with brownie.reverts("Your logged in address isn't the same as the agreement's signee"):
         deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[wrong_account]})
 
-@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_withdrawAsTheSignee_second_reguire_fails_case_1(deploy, time):
+def test_withdrawAsTheSignee_second_reguire_fails_case_1(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].signee] > 0 fails'''
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
 
-@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_withdrawAsTheSignee_second_reguire_fails_case_2(deploy, time):
+def test_withdrawAsTheSignee_second_reguire_fails_case_2(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].signee] > 0 fails'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
 
-@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_withdrawAsTheSignee_withdrawal_sent_1(deploy, time):
+def test_withdrawAsTheSignee_withdrawal_sent_1(deploy):
     '''Check if the withdrawal is sent'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     signee_balance = accounts[signee].balance()
