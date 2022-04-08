@@ -507,7 +507,7 @@ def test_withdrawAsTheSignee_second_reguire_fails_case_2(deploy, time):
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_withdrawAsTheSignee_withdrawal_sent_1(deploy, time):
     '''Check if the withdrawal is sent'''
@@ -515,15 +515,14 @@ def test_withdrawAsTheSignee_withdrawal_sent_1(deploy, time):
     signee_balance = accounts[signee].balance()
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
     assert accounts[signee].balance() == signee_balance + deposit
-
-@pytest.mark.parametrize("amount", [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])
+@pytest.mark.aaa
+@pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_withdrawAsTheSignee_withdrawal_sent_2(deploy, amount):
-    '''Check if the withdrawal is sent'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    signee_balance = accounts[signee].balance()
+    '''Check if the withdrawal and redundant amount'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount})
+    signee_balance = accounts[signee].balance()
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
-    assert accounts[signee].balance() == signee_balance
+    assert accounts[signee].balance() == signee_balance + deposit + amount - amount_sent
 
 @pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_withdrawAsTheSignee_withdrawal_sent_3(deploy, time):
