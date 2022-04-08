@@ -508,7 +508,7 @@ def test_withdrawAsTheSignee_withdrawal_sent_1(deploy, time):
 
 @pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_withdrawAsTheSignee_withdrawal_sent_2(deploy, amount):
-    '''Check if the withdrawal and redundant amount'''
+    '''Check if the withdrawal and redundant amount is sent'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount})
     signee_balance = accounts[signee].balance()
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
