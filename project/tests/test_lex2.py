@@ -447,12 +447,6 @@ def test_withdrawAsTheReceiver_first_reguire_fails(deploy, wrong_account):
     with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[wrong_account]})
 
-def test_withdrawAsTheReceiver_first_reguire_success(deploy):
-    '''require statement exactAgreement[_id].receiver == msg.sender doesn't fail'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
-    function_initialize = deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-    assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
-
 def test_withdrawAsTheReceiver_second_reguire_fails_case_1(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].receiver] > 0 fails'''
     with brownie.reverts("There aren't any funds to withdraw"):
@@ -464,7 +458,7 @@ def test_withdrawAsTheReceiver_second_reguire_fails_case_2(deploy):
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-@pytest.mark.aaa
+
 def test_withdrawAsTheReceiver_withdrawal_sent(deploy):
     '''Check if the withdrawal was sent to receiver'''
     receiver_balance = accounts[receiver].balance()
@@ -515,3 +509,9 @@ def test_wasContractBreached_withdrawal_sent_5(deploy, seconds_sleep):
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == balance_receiver + amount_sent
+@pytest.mark.aaa
+def test_withdrawAsTheReceiver_emit(deploy):
+    '''check if it emits a message'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
+    function_initialize = deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
+    assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
