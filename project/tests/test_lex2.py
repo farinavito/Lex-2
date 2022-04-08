@@ -452,16 +452,15 @@ def test_withdrawAsTheReceiver_first_reguire_success(deploy):
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     function_initialize = deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
-@pytest.mark.aaa
+
 def test_withdrawAsTheReceiver_second_reguire_fails_case_1(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].receiver] > 0 fails'''
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-
+@pytest.mark.aaa
 def test_withdrawAsTheReceiver_second_reguire_fails_case_2(deploy):
-    '''require statement withdraw_receiver[exactAgreement[_id].receiver] > 0 fails, because we already withdraw the funds'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    '''require statement withdraw_receiver[exactAgreement[_id].receiver] > 0 fails'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     with brownie.reverts("There aren't any funds to withdraw"):
         deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
