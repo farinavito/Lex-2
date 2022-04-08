@@ -485,16 +485,6 @@ def test_withdrawAsTheSignee_first_reguire_fails(deploy, wrong_account):
         deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[wrong_account]})
 
 @pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_withdrawAsTheSignee_first_reguire_fails_pair(deploy, time):
-    '''require statement exactAgreement[_id].signee == msg.sender doesn't fail'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
-    chain = Chain()
-    chain.sleep(time)
-    function_initialize = deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
-    assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
-
-@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_withdrawAsTheSignee_second_reguire_fails_case_1(deploy, time):
     '''require statement withdraw_receiver[exactAgreement[_id].signee] > 0 fails'''
     with brownie.reverts("There aren't any funds to withdraw"):
@@ -515,7 +505,7 @@ def test_withdrawAsTheSignee_withdrawal_sent_1(deploy, time):
     signee_balance = accounts[signee].balance()
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
     assert accounts[signee].balance() == signee_balance + deposit
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_withdrawAsTheSignee_withdrawal_sent_2(deploy, amount):
     '''Check if the withdrawal and redundant amount'''
@@ -523,14 +513,10 @@ def test_withdrawAsTheSignee_withdrawal_sent_2(deploy, amount):
     signee_balance = accounts[signee].balance()
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
     assert accounts[signee].balance() == signee_balance + deposit + amount - amount_sent
-
+@pytest.mark.aaa
 @pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_withdrawAsTheSignee_withdrawal_sent_3(deploy, time):
-    '''Check if the withdrawal is sent'''
+def test_withdrawAsTheSignee_emit(deploy, time):
+    '''require statement exactAgreement[_id].signee == msg.sender doesn't fail'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    signee_balance = accounts[signee].balance()
-    chain = Chain()
-    chain.sleep(time)
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
-    assert accounts[signee].balance() == signee_balance 
+    function_initialize = deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
