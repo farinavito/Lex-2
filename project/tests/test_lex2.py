@@ -390,7 +390,7 @@ def test_wasContractBreached_before_agreements_duration(deploy):
     '''check if the wasContractBreached called before agreement's duration period'''
     function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert function_initialize.events[0][0]['message'] == "The agreement wasn't breached"
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_wasContractBreached_after_agreements_duration_status_terminated(deploy, seconds_sleep):
     '''check if the wasContractBreached's status is terminated after agreement's duration period'''
@@ -398,3 +398,49 @@ def test_wasContractBreached_after_agreements_duration_status_terminated(deploy,
     chain.sleep(seconds_sleep)
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert deploy.exactAgreement(agreements_number)[6] == 'Terminated'
+@pytest.mark.aaa
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_wasContractBreached_after_agreements_duration_send_deposit(deploy, seconds_sleep):
+    '''check if the wasContractBreached returns deposit tot he receiver after agreement's duration period'''
+    balance_receiver = accounts[receiver].balance() 
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
+    deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
+    assert accounts[receiver].balance() == balance_receiver + deposit
+
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_received_on_time_false_totalDepositSent(deploy, seconds_sleep):
+    '''check if totalDepositSent increases by the deposit'''
+    depositsTogether = deploy.totalDepositSent()
+    agreementsdeposit = deploy.exactAgreement(agreements_number)[4]
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.sendPayment(3, {'from': accounts[signee], 'value': amount_sent}) 
+    assert deploy.totalDepositSent() == depositsTogether + agreementsdeposit
+
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_received_on_time_false_deposit_equals_zero(deploy, seconds_sleep):
+    '''check if the deposit is equal zero when transaction is sent past the agreement's duration'''
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
+    assert deploy.exactAgreement(agreements_number)[5] == "0"
+
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_received_on_time_false_return_transaction(deploy, seconds_sleep):
+    '''check if the transaction is sent back to the signee when transaction is sent past the agreement's duration'''
+    balance_signee = accounts[signee].balance() 
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    assert accounts[signee].balance() == balance_signee
+
+@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_sendPayment_received_on_time_false_emit_Terminated(deploy, seconds_sleep):
+    '''check if the event Terminated is emitted when transaction is sent past the agreement's duration'''
+    chain = Chain()
+    chain.sleep(seconds_sleep)
+    function_initialize = deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    assert function_initialize.events[0][0]['message'] == "The agreement was terminated due to late payment"
