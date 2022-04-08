@@ -514,6 +514,14 @@ def test_withdrawAsTheSignee_withdrawal_sent_2(deploy, amount):
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
     assert accounts[signee].balance() == signee_balance + deposit + amount - amount_sent
 @pytest.mark.aaa
+@pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_withdrawAsTheSignee_withdrawal_sent_3(deploy, amount):
+    '''Check if the withdrawal is sent'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount})
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    with brownie.reverts("There aren't any funds to withdraw"):
+        deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+
 @pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_withdrawAsTheSignee_emit(deploy, time):
     '''require statement exactAgreement[_id].signee == msg.sender doesn't fail'''
