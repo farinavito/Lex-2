@@ -378,11 +378,15 @@ def test_wasContractBreached_require_receiver_equals_wrong_account_2(deploy, wro
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("right_accounts",  [receiver])
 def test_wasContractBreached_status_terminated(deploy, right_accounts):
     '''check if the wasContractBreached's status terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[right_accounts]})
     assert function_initialize.events[0][0]['message'] == "The agreement is already terminated"
-    
+@pytest.mark.aaa
+def test_wasContractBreached_before_agreements_duration(deploy):
+    '''check if the wasContractBreached called before agreement's duration period'''
+    function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
+    assert function_initialize.events[0][0]['message'] == "The agreement wasn't breached"
