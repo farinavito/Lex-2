@@ -471,3 +471,67 @@ def test_withdrawAsTheReceiver_emit(deploy):
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     function_initialize = deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
+
+
+
+'''TEST WITHDRAWASTHESIGNEE'''
+
+
+
+@pytest.mark.parametrize("wrong_account", [without_signee[0], without_signee[1], without_signee[2]])
+def test_withdrawAsTheSignee_first_reguire_fails(deploy, wrong_account):
+    '''require statement exactAgreement[_id].signee == msg.sender fails'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
+    with brownie.reverts("Your logged in address isn't the same as the agreement's signee"):
+        deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[wrong_account]})
+
+@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_withdrawAsTheSignee_first_reguire_fails_pair(deploy, time):
+    '''require statement exactAgreement[_id].signee == msg.sender doesn't fail'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
+    chain = Chain()
+    chain.sleep(time)
+    function_initialize = deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
+
+@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_withdrawAsTheSignee_second_reguire_fails(deploy, time):
+    '''require statement withdraw_receiver[exactAgreement[_id].signee] > 0 fails, because we already withdraw the funds'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    chain = Chain()
+    chain.sleep(time)
+    with brownie.reverts("There aren't any funds to withdraw"):
+        deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+
+@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_withdrawAsTheSignee_withdrawal_sent_1(deploy, time):
+    '''Check if the withdrawal is sent'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 3*amount_sent})
+    signee_balance = accounts[signee].balance()
+    chain = Chain()
+    chain.sleep(time)
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    assert accounts[signee].balance() == signee_balance + 2*amount_sent
+
+@pytest.mark.parametrize("amount", [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])
+def test_withdrawAsTheSignee_withdrawal_sent_2(deploy, amount):
+    '''Check if the withdrawal is sent'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    signee_balance = accounts[signee].balance()
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount})
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    assert accounts[signee].balance() == signee_balance
+
+@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
+def test_withdrawAsTheSignee_withdrawal_sent_3(deploy, time):
+    '''Check if the withdrawal is sent'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    signee_balance = accounts[signee].balance()
+    chain = Chain()
+    chain.sleep(time)
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    assert accounts[signee].balance() == signee_balance 
