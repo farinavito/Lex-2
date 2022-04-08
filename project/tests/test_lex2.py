@@ -408,7 +408,7 @@ def test_wasContractBreached_after_agreements_duration_send_deposit(deploy, seco
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == balance_receiver + deposit
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_wasContractBreached_after_agreements_duration_totalDepositSent(deploy, seconds_sleep):
     '''check if totalDepositSent increases by the deposit'''
@@ -420,27 +420,17 @@ def test_wasContractBreached_after_agreements_duration_totalDepositSent(deploy, 
     assert deploy.totalDepositSent() == depositsTogether + agreementsdeposit
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_sendPayment_received_on_time_false_deposit_equals_zero(deploy, seconds_sleep):
-    '''check if the deposit is equal zero when transaction is sent past the agreement's duration'''
+def test_wasContractBreached_after_agreements_duration_deposit_equals_zero(deploy, seconds_sleep):
+    '''check if the deposit is equal zero when the wasContractBreached is called past the agreement's duration'''
     chain = Chain()
     chain.sleep(seconds_sleep)
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
+    deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert deploy.exactAgreement(agreements_number)[5] == "0"
-
-@pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_sendPayment_received_on_time_false_return_transaction(deploy, seconds_sleep):
-    '''check if the transaction is sent back to the signee when transaction is sent past the agreement's duration'''
-    balance_signee = accounts[signee].balance() 
-    chain = Chain()
-    chain.sleep(seconds_sleep)
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
-    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
-    assert accounts[signee].balance() == balance_signee
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_emit_Terminated(deploy, seconds_sleep):
     '''check if the event Terminated is emitted when transaction is sent past the agreement's duration'''
     chain = Chain()
     chain.sleep(seconds_sleep)
-    function_initialize = deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    assert function_initialize.events[0][0]['message'] == "The agreement was terminated due to late payment"
+    function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
+    assert function_initialize.events[0][0]['message'] == "The agreement has been terminated"
