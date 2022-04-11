@@ -576,15 +576,22 @@ def test_withdrawAsTheOwner_check_event_emitted(deploy, deploy_addressProtector)
     function_initialize = deploy.withdrawAsTheOwner({'from': accounts[9]})
     assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"  
 
+
+
 '''TEST GETWITHDRAWALRECEIVER'''
 
 
-
+@pytest.mark.aaa
 @pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
 def test_getWithdrawalReceiver_reguire_fails(deploy, wrong_account):
     '''require statement exactAgreement[_id].receiver == msg.sender fails'''
+    with brownie.reverts("Your logged in address isn't the same as the agreement's receiverr"):
+        deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[wrong_account]})
+
+@pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
+def test_getWithdrawalReceiver_reguire_fails_case2(deploy, wrong_account):
+    '''require statement exactAgreement[_id].receiver == msg.sender fails'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[wrong_account]})
 
