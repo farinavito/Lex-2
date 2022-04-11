@@ -581,7 +581,7 @@ def test_withdrawAsTheOwner_check_event_emitted(deploy, deploy_addressProtector)
 '''TEST GETWITHDRAWALRECEIVER'''
 
 
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
 def test_getWithdrawalReceiver_reguire_fails(deploy, wrong_account):
     '''require statement exactAgreement[_id].receiver == msg.sender fails'''
@@ -594,13 +594,12 @@ def test_getWithdrawalReceiver_reguire_fails_case2(deploy, wrong_account):
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[wrong_account]})
-
+@pytest.mark.aaa
 def test_getWithdrawalReceiver_reguire_fails_pair(deploy):
     '''require statement exactAgreement[_id].receiver == msg.sender doesn't fail'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     function_initialize = deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[receiver]})
-    assert function_initialize == 4*amount_sent - commission
+    assert function_initialize == amount_sent - commission
 
 def test_getWithdrawalReceiver_uninitialize(deploy):
     '''check if the withdraw_receiver is empty after only sending the deposit'''
