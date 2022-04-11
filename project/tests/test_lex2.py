@@ -16,6 +16,15 @@ agreement_duration = 2629743 + 1649185494
 initial_howLong = 30
 agreements_number = 1
 
+#new agreement2
+signee_2 = signee
+receiver_2 = receiver
+amount_sent_2 = 10**5
+deposit_2 = 100
+agreement_duration_2 = 31556926 + 1649185494
+initial_howLong_2 = 364
+agreements_number_2 = 2
+
 
 without_signee = [signee + 1, signee + 2, signee + 3]
 without_receiver = [receiver - 1, receiver - 2, receiver - 3]
@@ -39,32 +48,25 @@ addressProtector3 = 5
 addressProtector4 = 6
 addressProtector5 = 7
 
-@pytest.fixture()
-def deploy_addressProtector(AddressProtector, module_isolation):
+@pytest.fixture(scope="module", autouse=True)
+def deploy_addressProtector(AddressProtector):
     return AddressProtector.deploy(accounts[protectorOwnerAddress], accounts[protectorWaitingToBeOwnerAddress], accounts[addressProtector1], accounts[addressProtector2], accounts[addressProtector3], accounts[addressProtector4], accounts[addressProtector5], {'from': accounts[0]})
 
-@pytest.fixture(autouse=True)
-def deploy(sendMoneyUntil, deploy_addressProtector, module_isolation):
+@pytest.fixture(scope="module", autouse=True)
+def deploy(sendMoneyUntil, deploy_addressProtector):
     return sendMoneyUntil.deploy(deploy_addressProtector, {'from': accounts[0]})
 
-@pytest.fixture(autouse=True)
-def new_agreement(deploy, module_isolation):
+@pytest.fixture(scope="module", autouse=True)
+def new_agreement(deploy):
     return deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     
-
-signee_2 = signee
-receiver_2 = receiver
-amount_sent_2 = 10**5
-deposit_2 = 100
-agreement_duration_2 = 31556926 + 1649185494
-initial_howLong_2 = 364
-agreements_number_2 = 2
-
-@pytest.fixture(autouse=True)
-def new_agreement_2(deploy, module_isolation):
+@pytest.fixture(scope="module", autouse=True)
+def new_agreement_2(deploy):
     return deploy.createAgreement(accounts[receiver_2], amount_sent_2, agreement_duration_2, {'from': accounts[signee_2], 'value': deposit_2})
 
-
+@pytest.fixture(autouse=True)
+def isolation(fn_isolation):
+    pass
 
 '''TESTING CREATEAGREEMENT AGREEMENT 1'''
 
@@ -298,21 +300,19 @@ def test_sendPayment_value_large_amount_send_value_pair_event(deploy, value_sent
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_status_terminated(deploy, seconds_sleep):
     '''check if the agreement is terminated, when transaction is sent past the agreement's duration'''
-    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     chain = Chain()
     chain.sleep(seconds_sleep)
-    deploy.sendPayment(3, {'from': accounts[signee], 'value': amount_sent})
-    assert deploy.exactAgreement(3)[6] == 'Terminated'
+    deploy.sendPayment(2, {'from': accounts[signee], 'value': amount_sent})
+    assert deploy.exactAgreement(2)[6] == 'Terminated'
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_send_deposit(deploy, seconds_sleep):
     '''check if the deposit is sent to the receiver when transaction is sent past the agreement's duration'''
-    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     balance_receiver = accounts[receiver].balance() 
     chain = Chain()
     chain.sleep(seconds_sleep)
-    deploy.sendPayment(3, {'from': accounts[signee], 'value': 4*amount_sent}) 
-    deploy.withdrawAsTheReceiver(3, {'from': accounts[receiver]})
+    deploy.sendPayment(2, {'from': accounts[signee], 'value': 4*amount_sent}) 
+    deploy.withdrawAsTheReceiver(2, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == balance_receiver + deposit
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
@@ -322,7 +322,7 @@ def test_sendPayment_received_on_time_false_totalDepositSent(deploy, seconds_sle
     agreementsdeposit = deploy.exactAgreement(agreements_number)[4]
     chain = Chain()
     chain.sleep(seconds_sleep)
-    deploy.sendPayment(3, {'from': accounts[signee], 'value': amount_sent}) 
+    deploy.sendPayment(2, {'from': accounts[signee], 'value': amount_sent}) 
     assert deploy.totalDepositSent() == depositsTogether + agreementsdeposit
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
@@ -585,7 +585,7 @@ def test_withdrawAsTheOwner_check_event_emitted(deploy, deploy_addressProtector)
 @pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
 def test_getWithdrawalReceiver_reguire_fails(deploy, wrong_account):
     '''require statement exactAgreement[_id].receiver == msg.sender fails'''
-    with brownie.reverts("Your logged in address isn't the same as the agreement's receiverr"):
+    with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[wrong_account]})
 
 @pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
