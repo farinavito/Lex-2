@@ -553,7 +553,7 @@ def test_withdrawAsTheOwner_check_require_statement_2_case2(deploy, deploy_addre
         deploy.withdrawAsTheOwner({'from': accounts[9]})
     except Exception as e:
         assert e.message[50:] == "There aren't any funds to withdraw"
-@pytest.mark.aaa
+
 def test_withdrawAsTheOwner_check_commission_sent(deploy, deploy_addressProtector):
     '''Check if the commission is sent to account 8'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
@@ -582,11 +582,10 @@ def test_withdrawAsTheOwner_check_commission_sent_3(deploy, deploy_addressProtec
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     deploy.withdrawAsTheOwner({'from': accounts[8]})
     assert accounts[8].balance() == balance_receiver + 2*commission
-
+@pytest.mark.aaa
 def test_withdrawAsTheOwner_check_event_emitted(deploy, deploy_addressProtector):
     '''Check if the event NotifyUser is emitted'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
     deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
     function_initialize = deploy.withdrawAsTheOwner({'from': accounts[9]})
     assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"  
