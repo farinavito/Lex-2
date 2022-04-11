@@ -625,18 +625,15 @@ def test_getWithdrawalsignee_reguire_fails_case2(deploy, wrong_account):
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     with brownie.reverts("Your logged in address isn't the same as the agreement's signee"):
         deploy.getWithdrawalSignee(agreements_number, {'from': accounts[wrong_account]})
-@pytest.mark.aaa
+
 def test_getWithdrawalSignee_reguire_fails_pair(deploy):
     '''require statement exactAgreement[_id].signee == msg.sender doesn't fail'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     function_initialize = deploy.getWithdrawalSignee(agreements_number, {'from': accounts[signee]})
     assert function_initialize == deposit
-
-@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_getWithdrawalSignee_uninitialize(deploy, time):
+@pytest.mark.aaa
+def test_getWithdrawalSignee_uninitialize(deploy):
     '''check if the withdraw_signee is not empty after only sending the deposit'''
     function_initialize = deploy.getWithdrawalSignee(agreements_number, {'from': accounts[signee]})
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    chain = Chain()
-    chain.sleep(time)
     assert function_initialize + amount_sent == amount_sent
