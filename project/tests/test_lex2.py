@@ -535,7 +535,7 @@ def test_withdrawAsTheOwner_check_require_statement_1(deploy):
     '''Check if onlyWhitelisted doesn't allow any other account to call the function '''
     with brownie.reverts("You aren't whitelisted"):
         deploy.withdrawAsTheOwner({'from': accounts[9]})
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("wrong_account", [without_signee[0], without_signee[1], without_signee[2]])
 def test_withdrawAsTheOwner_check_require_statement_1_case2(deploy, wrong_account):
     '''require statement exactAgreement[_id].signee == msg.sender fails'''
@@ -569,27 +569,6 @@ def test_withdrawAsTheOwner_check_commission_sent(deploy, deploy_addressProtecto
     deploy.withdrawAsTheOwner({'from': accounts[8]})
     assert accounts[8].balance() == balance_receiver + commission
 
-def test_withdrawAsTheOwner_check_commission_sent_2(deploy, deploy_addressProtector):
-    '''Check if the commission is sent to account 8'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
-    deploy_addressProtector.addToWhitelist(accounts[8], {'from': accounts[1]})
-    balance_receiver = accounts[8].balance()
-    deploy.withdrawAsTheOwner({'from': accounts[8]})
-    assert accounts[8].balance() == balance_receiver + 2*commission
-
-def test_withdrawAsTheOwner_check_commission_sent_3(deploy, deploy_addressProtector):
-    '''Check if the commission is sent to account 8'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
-    deploy_addressProtector.addToWhitelist(accounts[8], {'from': accounts[1]})
-    balance_receiver = accounts[8].balance()
-    deploy.withdrawAsTheOwner({'from': accounts[8]})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': 4*amount_sent})
-    deploy.withdrawAsTheOwner({'from': accounts[8]})
-    assert accounts[8].balance() == balance_receiver + 2*commission
-
 def test_withdrawAsTheOwner_check_event_emitted(deploy, deploy_addressProtector):
     '''Check if the event NotifyUser is emitted'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
@@ -597,29 +576,3 @@ def test_withdrawAsTheOwner_check_event_emitted(deploy, deploy_addressProtector)
     function_initialize = deploy.withdrawAsTheOwner({'from': accounts[9]})
     assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"  
 
-def test_withdrawAsTheOwner_first_require_fails(deploy, deploy_addressProtector):
-    '''require statement exactAgreement[_id].signee == msg.sender fails'''
-    deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    with brownie.reverts("There aren't any funds to withdraw"):
-        deploy.withdrawAsTheOwner({'from': accounts[9]})
-
-def test_withdrawAsTheOwner_emit(deploy, deploy_addressProtector):
-    '''require statement exactAgreement[_id].signee == msg.sender doesn't fail'''
-    deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    function_initialize = deploy.withdrawAsTheOwner({'from': accounts[9]})
-    assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
-
-@pytest.mark.parametrize("time", [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_withdrawAsTheOwner_withdrawal_sent_1(deploy, deploy_addressProtector, time):
-    '''Check if the withdrawal is sent'''
-    deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    signee_balance = accounts[9].balance()
-    chain = Chain()
-    chain.sleep(time)
-    deploy.withdrawAsTheOwner({'from': accounts[9]})
-    assert accounts[9].balance() == signee_balance + deploy.commission()
