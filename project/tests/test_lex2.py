@@ -531,7 +531,7 @@ def test_withdrawAsTheSignee_emit(deploy):
 
 
 @pytest.mark.aaa
-def test_withdrawAsTheOwner_check_onlyWhitelisted(deploy):
+def test_withdrawAsTheOwner_check_require_statement_1(deploy):
     '''Check if onlyWhitelisted doesn't allow any other account to call the function '''
     with brownie.reverts("You aren't whitelisted"):
         deploy.withdrawAsTheOwner({'from': accounts[9]})
