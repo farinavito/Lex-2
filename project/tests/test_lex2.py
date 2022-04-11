@@ -706,3 +706,19 @@ def test_changeCommission_emit_event(deploy, deploy_addressProtector):
     deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
     function_initialize = deploy.changeCommission(10**15, {'from' : accounts[9]})
     assert function_initialize.events[0][0]['message'] == "Commission changed"
+
+
+
+'''TEST ADDTOWHITELIST '''
+
+
+
+def test_addToWhitelist_check_onlyOwner(deploy_addressProtector):
+    '''Check if onlyOwner modifier doesn't let other accounts to call this function'''
+    with brownie.reverts("You are not the owner"):
+        deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[3]})
+
+def test_addToWhitelist_check_added_to_whitelist(deploy_addressProtector):
+    '''Check if the account is added to the whitelist'''
+    deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
+    assert deploy_addressProtector.whitelist(accounts[9]) == True
