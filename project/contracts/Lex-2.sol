@@ -394,7 +394,7 @@ contract sendMoneyUntil {
   /// @notice Changing the commission
   function changeCommission(uint256 _newCommission) external {
     require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
-		require(_newCommission > 0 && _newCommission < 10*15 + 1, "Commission doesn't follow the rules");
+		require(_newCommission > 0 && _newCommission < 10**15 + 1, "Commission doesn't follow the rules");
 		commission = _newCommission;
 		emit NotifyUser("Commission changed");
 	}
