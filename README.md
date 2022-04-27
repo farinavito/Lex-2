@@ -10,7 +10,7 @@ Just imagine how this could help to create a new world. A world were trusting st
 -------------------------------------------------
 * How does this smart contract follow the above?
 -------------------------------------------------
-It enables you to commit sending a specific amount of money untill a predetermined date. This is how we have enabled a commitment between two parties, otherwise the sender will loose the deposit.
+It enables you to commit sending a specific amount of money until a predetermined date. This is how we have enabled a commitment between two parties, otherwise the sender will loose the deposit.
 
 SHORT SUMMARY OF INTENDED USE
 ------------------------------
@@ -35,7 +35,7 @@ The purpose of this smart contract is to check if the subject who commited sendi
 	   The sender will get back the deposit if he/she fulfills his/her obligations in the agreement.
 	2) Now the agreement is activated. The sender needs to fulfill his/her obligations in the agreement by sending the right amount of money in the correct time period. Otherwise, he/she will loose the deposit. 
 	3) The receiver can check if the agreement was breached by calling wasContractBreached function. He/She will received the deposit in the case of a breach.
-	4) once the sender sends the agreed amount, the contract will be terminated and he/she will be able to retrieve his/her deposit.
+	4) Once the sender sends the agreed amount, the contract will be terminated and he/she will be able to retrieve his/her deposit.
 	5) The sender and receiver can withdraw the money that belongs to them by calling a withdraw function.
 
 ------------------------------------------------------------------
