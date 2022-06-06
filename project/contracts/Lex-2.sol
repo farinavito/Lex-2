@@ -147,10 +147,6 @@ contract sendMoneyUntil {
     uint256 deadline;
   }
 
-  /// @notice Storing the owner's address
-  DO WE STILL NEED IT?
-  address internal owner;
-
   /// @notice Using against re-entrancy
   uint16 internal locked = 1;
 
