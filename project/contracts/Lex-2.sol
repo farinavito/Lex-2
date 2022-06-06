@@ -126,28 +126,29 @@ contract AddressProtector {
 }
 
 contract sendMoneyUntil {
-  //remove transactionCreated?
-  /// @notice Defining the agreement 
-  /// @param id A unique identifier of the agreement
-  /// @param signee The person who commits sending the money to the receiver 
-  /// @param receiver The person receiving the money
-  /// @param amount The quantity of money that the signee commits sending to the receiver
-  /// @param transactionCreated Unix timestamp when transaction was sent
-  /// @param deposit The first transaction sent to the agreement. Initial state will be zero
-  /// @param status Representation of different stages in the agreement: Created, Terminated
-  /// @param deadline The number of days till the agreement expires
-  struct Agreement{
-  uint256 id; 
-  address signee;
-  address payable receiver; 
-  uint256 amount;
-  uint256 deposit;
-  uint256 transactionCreated;
-  string status;
-  uint256 deadline;
+    //remove transactionCreated?
+    /// @notice Defining the agreement 
+    /// @param id A unique identifier of the agreement
+    /// @param signee The person who commits sending the money to the receiver 
+    /// @param receiver The person receiving the money
+    /// @param amount The quantity of money that the signee commits sending to the receiver
+    /// @param transactionCreated Unix timestamp when transaction was sent
+    /// @param deposit The first transaction sent to the agreement. Initial state will be zero
+    /// @param status Representation of different stages in the agreement: Created, Terminated
+    /// @param deadline The number of days till the agreement expires
+    struct Agreement{
+    uint256 id; 
+    address signee;
+    address payable receiver; 
+    uint256 amount;
+    uint256 deposit;
+    uint256 transactionCreated;
+    string status;
+    uint256 deadline;
   }
 
   /// @notice Storing the owner's address
+  DO WE STILL NEED IT?
   address internal owner;
 
   /// @notice Using against re-entrancy
@@ -160,8 +161,7 @@ contract sendMoneyUntil {
   uint256 private withdrawal_amount_owner;
 
   /// @notice Used to increase the id of the agreements in the "createAgreements" function
-  //change uint to uint256
-  uint public numAgreement = 1;
+  uint256 public numAgreement = 1;
 
   /// @notice Returning the total amount of ether that was commited
   uint256 public totalEtherCommited;
@@ -170,10 +170,10 @@ contract sendMoneyUntil {
   uint256 public totalDepositSent;  
 
   modifier noReentrant() {
-  require(locked == 1, "No re-entrancy");
-  locked = 2;
-  _;
-  locked = 1;
+    require(locked == 1, "No re-entrancy");
+    locked = 2;
+    _;
+    locked = 1;
   }
 
   /// @notice Saving the money sent for the signee to withdraw it
