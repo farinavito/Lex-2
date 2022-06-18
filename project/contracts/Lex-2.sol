@@ -157,10 +157,10 @@ contract sendMoneyUntil {
   uint16 internal locked = 1;
 
   /// @notice The commission we charge
-  uint256 public commission = 1;
+  //uint256 public commission = 1;
 
   /// @notice The commission collected
-  uint256 private withdrawal_amount_owner;
+  //uint256 private withdrawal_amount_owner;
 
   /// @notice Used to increase the id of the agreements in the "createAgreements" function
   uint256 public numAgreement = 1;
@@ -280,16 +280,16 @@ contract sendMoneyUntil {
         //if the amount sent was enough
         if (exactAgreement[_id].amount <= msg.value){
           //storing the amount sent subtracted by commission
-          uint256 changedAmount;
-          changedAmount = msg.value - commission;
+          //uint256 changedAmount;
+          //changedAmount = msg.value - commission;
           //adding the commission to a owner's withdrawal
-          withdrawal_amount_owner += commission;
+          //withdrawal_amount_owner += commission;
           //send the transaction to the receiver
-          withdraw_receiver[exactAgreement[_id].receiver] += changedAmount;
+          withdraw_receiver[exactAgreement[_id].receiver] += msg.value;
           //returning any access ethers sent to the sender
           withdraw_signee[exactAgreement[_id].signee] += msg.value - exactAgreement[_id].amount;
           //change the total amount of ether sent
-          totalEtherCommited += changedAmount;
+          totalEtherCommited += msg.value;
           //returning the deposit to the signee
           withdraw_signee[exactAgreement[_id].signee] += exactAgreement[_id].deposit;
           //terminate the agreement
@@ -364,7 +364,7 @@ contract sendMoneyUntil {
     withdraw_receiver[exactAgreement[_id].receiver] = 0;
     emit NotifyUser("Withdrawal has been transfered");
   }
-  
+/*  
   /// @notice The owner withdrawing the money that belongs to his address
   function withdrawAsTheOwner() external payable noReentrant {
     require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
@@ -374,7 +374,7 @@ contract sendMoneyUntil {
     withdrawal_amount_owner = 0;
     emit NotifyUser("Withdrawal has been transfered");
   }
-
+*/
   /// @notice Return the withdrawal amount of the agreement's signee
   function getWithdrawalSignee() external view returns(uint256){
     //require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
@@ -386,13 +386,14 @@ contract sendMoneyUntil {
     //require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
     return withdraw_receiver[msg.sender];
   }
-
+/*
   /// @notice Return the withdrawal amount of the owner
   function getWithdrawalOwner() external view returns(uint256){
     require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
     return withdrawal_amount_owner;
   }
-  
+*/
+/*  
   /// @notice Changing the commission
   function changeCommission(uint256 _newCommission) external {
     require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
@@ -400,7 +401,7 @@ contract sendMoneyUntil {
 		commission = _newCommission;
 		emit NotifyUser("Commission changed");
 	}
-
+*/
 
  fallback() external {}
  receive() external payable {}
