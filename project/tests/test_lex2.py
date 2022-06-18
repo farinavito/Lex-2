@@ -46,11 +46,7 @@ addressProtector2 = 4
 addressProtector3 = 5
 addressProtector4 = 6
 addressProtector5 = 7
-'''
-@pytest.fixture(scope="module", autouse=True)
-def deploy_addressProtector(AddressProtector):
-    return AddressProtector.deploy(accounts[protectorOwnerAddress], accounts[protectorWaitingToBeOwnerAddress], accounts[addressProtector1], accounts[addressProtector2], accounts[addressProtector3], accounts[addressProtector4], accounts[addressProtector5], {'from': accounts[0]})
-'''
+
 @pytest.fixture(scope="module", autouse=True)
 def deploy(sendMoneyUntil):
     return sendMoneyUntil.deploy( {'from': accounts[0]})
@@ -123,8 +119,8 @@ def test_new_agreement_fails_require_agreementStart_larger_than_deadline(deploy)
     except Exception as e:
             assert e.message[50:] == "The agreement can't be created in the past"
 
-@pytest.mark.parametrize("_amount", [0, 1, 10, 80, 99, 100, 101, 200])
-def test_new_agreement_fails_require_msg_value_larger_or_equal_to_zero(deploy, _amount):
+@pytest.mark.parametrize("_amount", [0, 1, 10, 80, 99])
+def test_new_agreement_fails_require_msg_value_larger_or_equal_to_100(deploy, _amount):
     '''check if the creation of the new agreement fails, because the msg.value should be larger or equal to 100'''
     try:
         deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': _amount})
