@@ -7,12 +7,11 @@ from brownie.network import rpc
 from brownie.network.state import Chain
 
 #new agreement
-commission = 1
 signee = 1
 receiver = 9
 amount_sent = 10**10
 deposit = 100
-agreement_duration = 2629743 + 1649185494
+agreement_duration = 2629743 + 1749185494
 initial_howLong = 30
 agreements_number = 1
 
@@ -21,7 +20,7 @@ signee_2 = signee
 receiver_2 = receiver
 amount_sent_2 = 10**5
 deposit_2 = 100
-agreement_duration_2 = 31556926 + 1649185494
+agreement_duration_2 = 31556926 + 1749185494
 initial_howLong_2 = 364
 agreements_number_2 = 2
 
@@ -47,14 +46,14 @@ addressProtector2 = 4
 addressProtector3 = 5
 addressProtector4 = 6
 addressProtector5 = 7
-
+'''
 @pytest.fixture(scope="module", autouse=True)
 def deploy_addressProtector(AddressProtector):
     return AddressProtector.deploy(accounts[protectorOwnerAddress], accounts[protectorWaitingToBeOwnerAddress], accounts[addressProtector1], accounts[addressProtector2], accounts[addressProtector3], accounts[addressProtector4], accounts[addressProtector5], {'from': accounts[0]})
-
+'''
 @pytest.fixture(scope="module", autouse=True)
-def deploy(sendMoneyUntil, deploy_addressProtector):
-    return sendMoneyUntil.deploy(deploy_addressProtector, {'from': accounts[0]})
+def deploy(sendMoneyUntil):
+    return sendMoneyUntil.deploy( {'from': accounts[0]})
 
 @pytest.fixture(scope="module", autouse=True)
 def new_agreement(deploy):
@@ -67,6 +66,8 @@ def new_agreement_2(deploy):
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
     pass
+
+
 
 '''TESTING CREATEAGREEMENT AGREEMENT 1'''
 
