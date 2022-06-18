@@ -125,6 +125,12 @@ contract AddressProtector {
     
 }
 
+/**
+  removed commission
+  removed id as the parameter in the getWithdrawalSignee and getWithdrawalReceiver
+
+ */
+
 contract sendMoneyUntil {
     //remove transactionCreated?
     /// @notice Defining the agreement 
@@ -370,15 +376,15 @@ contract sendMoneyUntil {
   }
 
   /// @notice Return the withdrawal amount of the agreement's signee
-  function getWithdrawalSignee(uint256 _id) external view returns(uint256){
-    require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
-    return withdraw_signee[exactAgreement[_id].signee];
+  function getWithdrawalSignee() external view returns(uint256){
+    //require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
+    return withdraw_signee[msg.sender];
   }
 
   /// @notice Return the withdrawal amount of the agreement's receiver
-  function getWithdrawalReceiver(uint256 _id) external view returns(uint256){
-    require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
-    return withdraw_receiver[exactAgreement[_id].receiver];
+  function getWithdrawalReceiver() external view returns(uint256){
+    //require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
+    return withdraw_receiver[msg.sender];
   }
 
   /// @notice Return the withdrawal amount of the owner
