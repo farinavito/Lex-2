@@ -246,8 +246,8 @@ def test_sendPayment_received_on_time_false_status_terminated(deploy, seconds_sl
     '''check if the agreement is terminated, when transaction is sent past the agreement's duration'''
     chain = Chain()
     chain.sleep(seconds_sleep)
-    deploy.sendPayment(2, {'from': accounts[signee], 'value': amount_sent})
-    assert deploy.exactAgreement(2)[6] == 'Terminated'
+    deploy.sendPayment(1, {'from': accounts[signee], 'value': amount_sent})
+    assert deploy.exactAgreement(1)[6] == 'Terminated'
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_send_deposit(deploy, seconds_sleep):
@@ -255,8 +255,8 @@ def test_sendPayment_received_on_time_false_send_deposit(deploy, seconds_sleep):
     balance_receiver = accounts[receiver].balance() 
     chain = Chain()
     chain.sleep(seconds_sleep)
-    deploy.sendPayment(2, {'from': accounts[signee], 'value': 4*amount_sent}) 
-    deploy.withdrawAsTheReceiver(2, {'from': accounts[receiver]})
+    deploy.sendPayment(1, {'from': accounts[signee], 'value': 4*amount_sent}) 
+    deploy.withdrawAsTheReceiver(1, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == balance_receiver + deposit
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
@@ -265,8 +265,8 @@ def test_sendPayment_received_on_time_false_totalDepositSent(deploy, seconds_sle
     depositsTogether = deploy.totalDepositSent()
     agreementsdeposit = deploy.exactAgreement(agreements_number)[4]
     chain = Chain()
-    chain.sleep(seconds_sleep)
-    deploy.sendPayment(2, {'from': accounts[signee], 'value': amount_sent}) 
+    chain.sleep(seconds_sleep) 
+    deploy.sendPayment(1, {'from': accounts[signee], 'value': amount_sent}) 
     assert deploy.totalDepositSent() == depositsTogether + agreementsdeposit
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
@@ -408,7 +408,7 @@ def test_withdrawAsTheReceiver_withdrawal_sent(deploy):
     receiver_balance = accounts[receiver].balance()
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-    assert accounts[receiver].balance() == receiver_balance + amount_sent - commission
+    assert accounts[receiver].balance() == receiver_balance + amount_sent
 
 def test_withdrawAsTheReceiver_emit(deploy):
     '''check if it emits a message'''
