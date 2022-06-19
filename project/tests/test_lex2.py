@@ -44,10 +44,6 @@ def deploy(sendMoneyUntil):
 @pytest.fixture(scope="module", autouse=True)
 def new_agreement(deploy):
     return deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
-    
-@pytest.fixture(scope="module", autouse=True)
-def new_agreement_2(deploy):
-    return deploy.createAgreement(accounts[receiver_2], amount_sent_2, agreement_duration_2, {'from': accounts[signee_2], 'value': deposit_2})
 
 @pytest.fixture(autouse=True)
 def isolation(fn_isolation):
@@ -107,7 +103,7 @@ def test_new_agreement_fails_require_agreementStart_larger_than_deadline(deploy)
         endAgreement = now - 10000
         deploy.createAgreement(accounts[receiver], amount_sent, endAgreement, {'from': accounts[signee], 'value': deposit})
     except Exception as e:
-            assert e.message[50:] == "The agreement can't be created in the past"
+        assert e.message[50:] == "The agreement can't be created in the past"
 
 @pytest.mark.parametrize("_amount", [0, 1, 10, 80, 99])
 def test_new_agreement_fails_require_msg_value_larger_or_equal_to_100(deploy, _amount):
@@ -122,7 +118,7 @@ def test_new_agreement_fails_require_msg_value_larger_or_equal_to_100(deploy, _a
 def test_new_agreement_fails_require_msg_value_larger_or_equal_to_10_percentage(deploy, _amount, _deposit):
     '''check if the creation of the new agreement fails, because the msg.value is larger than 100, but it's not 10%'''
     deploy.createAgreement(accounts[receiver], _deposit, agreement_duration, {'from': accounts[signee], 'value': _amount})
-    assert deploy.exactAgreement(3)[0] == str(3)
+    assert deploy.exactAgreement(2)[0] == str(2)
 
 
 
@@ -136,6 +132,7 @@ def test_mySenderAgreements_emits_correct_id_accounts_1(deploy):
 
 def test_mySenderAgreements_emits_correct_id_accounts_2(deploy):
     '''check if the mapping mySenderAgreements is returning correctly the ids'''
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     assert deploy.mySenderAgreements(accounts[signee], 1) == '2'
 
 
@@ -150,6 +147,7 @@ def test_myReceiverAgreements_emits_correct_id_agreement_1(deploy):
 
 def test_myReceiverAgreements_emits_correct_id_agreement_2(deploy):
     '''check if the mapping myReceiverAgreements is returning correctly the ids'''
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     assert deploy.myReceiverAgreements(accounts[receiver], 1) == '2'
 
 
@@ -170,28 +168,26 @@ def test_sendPayments_fails_require_wrong_address(deploy, accounts_number):
 @pytest.mark.parametrize("accounts_number", [signee])
 def test_sendPayments_fails_require_wrong_address_pair(deploy, accounts_number):
     '''check if the sendPayments doesn't fail, because exactAgreement[_id].signee == msg.sender in the require statement'''
-    try:
-        #right signer's address
-        deploy.sendPayment(agreements_number, {'from': accounts[accounts_number], 'value': amount_sent})
-    except Exception as e:
-        assert e.message[50:] != "Only the signee can pay the agreement's terms"
+    #right signer's address
+    deploy.sendPayment(agreements_number, {'from': accounts[accounts_number], 'value': amount_sent})
+    assert deploy.exactAgreement(agreements_number)[1] == accounts[signee]
 
 #Checking when the agreement's status is "Created" and was sent on time and the amount sent was enough
-
+'''
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_larger_amount_withdrawal_amount_owner(deploy, deploy_addressProtector,value_sent):
-    '''check if withdrawal_amount_owner is correctly initialized'''
+    check if withdrawal_amount_owner is correctly initialized
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
     deploy_addressProtector.addToWhitelist(accounts[7], {'from': accounts[1]}) 
     assert deploy.getWithdrawalOwner({'from': accounts[7]}) == commission
-
+'''
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_large_amount_send_value(deploy, value_sent):
     '''check if the msg.value is sent when amount <= msg.value'''
     balance_receiver = accounts[receiver].balance() 
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
-    assert accounts[receiver].balance() == balance_receiver + value_sent - commission
+    assert accounts[receiver].balance() == balance_receiver + value_sent
 
 @pytest.mark.parametrize("value_sent",  [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_large_amount_send_value_check_signee_returned_excess(deploy, value_sent):
@@ -206,7 +202,7 @@ def test_sendPayment_value_larger_amount_send_value_totalEtherCommited_increased
     '''check if totalEtherCommited increases'''
     allEth = deploy.totalEtherCommited()
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
-    assert deploy.totalEtherCommited() == allEth + (value_sent - commission)
+    assert deploy.totalEtherCommited() == allEth + value_sent
 
 def test_sendPayment_value_large_amount_send_value_check_signee(deploy):
     '''check if the deposit is returned to the signee'''
