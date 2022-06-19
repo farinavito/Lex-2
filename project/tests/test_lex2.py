@@ -471,57 +471,6 @@ def test_withdrawAsTheSignee_emit(deploy):
 
 
 
-'''TEST WITHDRAWASTHEOWNER'''
-
-
-
-def test_withdrawAsTheOwner_check_require_statement_1(deploy):
-    '''Check if onlyWhitelisted doesn't allow any other account to call the function '''
-    with brownie.reverts("You aren't whitelisted"):
-        deploy.withdrawAsTheOwner({'from': accounts[9]})
-
-@pytest.mark.parametrize("wrong_account", [without_signee[0], without_signee[1], without_signee[2]])
-def test_withdrawAsTheOwner_check_require_statement_1_case2(deploy, wrong_account):
-    '''require statement exactAgreement[_id].signee == msg.sender fails'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    with brownie.reverts("You aren't whitelisted"):
-        deploy.withdrawAsTheOwner({'from': accounts[wrong_account]})
-
-def test_withdrawAsTheOwner_check_require_statement_2(deploy, deploy_addressProtector):
-    '''Check if the function is reverted, because there aren't any funds to withdraw '''
-    try:
-        deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
-        deploy.withdrawAsTheOwner({'from': accounts[9]})
-    except Exception as e:
-        assert e.message[50:] == "There aren't any funds to withdraw"
-
-def test_withdrawAsTheOwner_check_require_statement_2_case2(deploy, deploy_addressProtector):
-    '''Check if the function is reverted, because there aren't any funds to withdraw '''
-    try:
-        deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-        deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
-        deploy.withdrawAsTheOwner({'from': accounts[9]})
-        deploy.withdrawAsTheOwner({'from': accounts[9]})
-    except Exception as e:
-        assert e.message[50:] == "There aren't any funds to withdraw"
-
-def test_withdrawAsTheOwner_check_commission_sent(deploy, deploy_addressProtector):
-    '''Check if the commission is sent to account 8'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy_addressProtector.addToWhitelist(accounts[8], {'from': accounts[1]})
-    balance_receiver = accounts[8].balance()
-    deploy.withdrawAsTheOwner({'from': accounts[8]})
-    assert accounts[8].balance() == balance_receiver + commission
-
-def test_withdrawAsTheOwner_check_event_emitted(deploy, deploy_addressProtector):
-    '''Check if the event NotifyUser is emitted'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy_addressProtector.addToWhitelist(accounts[9], {'from': accounts[1]})
-    function_initialize = deploy.withdrawAsTheOwner({'from': accounts[9]})
-    assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"  
-
-
-
 '''TEST GETWITHDRAWALRECEIVER'''
 
 
