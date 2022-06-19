@@ -4,11 +4,6 @@ pragma solidity ^0.8.11;
 /// @title Implementing a legal contract: Person A commits sending X amount to person B until Y date.
 /// @author Farina Vito
 
-/**
-  removed commission
-  removed id as the parameter in the getWithdrawalSignee and getWithdrawalReceiver
-
- */
 
 contract sendMoneyUntil {
     //remove transactionCreated?
@@ -151,11 +146,6 @@ contract sendMoneyUntil {
       if (exactAgreement[_id].deadline > block.timestamp){
         //if the amount sent was enough
         if (exactAgreement[_id].amount <= msg.value){
-          //storing the amount sent subtracted by commission
-          //uint256 changedAmount;
-          //changedAmount = msg.value - commission;
-          //adding the commission to a owner's withdrawal
-          //withdrawal_amount_owner += commission;
           //send the transaction to the receiver
           withdraw_receiver[exactAgreement[_id].receiver] += msg.value;
           //returning any access ethers sent to the sender
@@ -236,17 +226,7 @@ contract sendMoneyUntil {
     withdraw_receiver[exactAgreement[_id].receiver] = 0;
     emit NotifyUser("Withdrawal has been transfered");
   }
-/*  
-  /// @notice The owner withdrawing the money that belongs to his address
-  function withdrawAsTheOwner() external payable noReentrant {
-    require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
-		require(withdrawal_amount_owner > 0, "There aren't any funds to withdraw");
-    (bool sent, ) = msg.sender.call{value: withdrawal_amount_owner}("");
-    require(sent, "Failed to send Ether");
-    withdrawal_amount_owner = 0;
-    emit NotifyUser("Withdrawal has been transfered");
-  }
-*/
+
   /// @notice Return the withdrawal amount of the agreement's signee
   function getWithdrawalSignee() external view returns(uint256){
     //require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
@@ -258,22 +238,6 @@ contract sendMoneyUntil {
     //require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
     return withdraw_receiver[msg.sender];
   }
-/*
-  /// @notice Return the withdrawal amount of the owner
-  function getWithdrawalOwner() external view returns(uint256){
-    require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
-    return withdrawal_amount_owner;
-  }
-*/
-/*  
-  /// @notice Changing the commission
-  function changeCommission(uint256 _newCommission) external {
-    require(accessingProtectors.whitelist(msg.sender), "You aren't whitelisted");
-		require(_newCommission > 0 && _newCommission < 10**15 + 1, "Commission doesn't follow the rules");
-		commission = _newCommission;
-		emit NotifyUser("Commission changed");
-	}
-*/
 
  fallback() external {}
  receive() external payable {}
