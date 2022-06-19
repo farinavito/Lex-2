@@ -475,28 +475,21 @@ def test_withdrawAsTheSignee_emit(deploy):
 
 
 
-@pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
-def test_getWithdrawalReceiver_reguire_fails(deploy, wrong_account):
-    '''require statement exactAgreement[_id].receiver == msg.sender fails'''
-    with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
-        deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[wrong_account]})
-
-@pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
-def test_getWithdrawalReceiver_reguire_fails_case2(deploy, wrong_account):
-    '''require statement exactAgreement[_id].receiver == msg.sender fails'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
-        deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[wrong_account]})
-
-def test_getWithdrawalReceiver_reguire_fails_pair(deploy):
-    '''require statement exactAgreement[_id].receiver == msg.sender doesn't fail'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    function_initialize = deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[receiver]})
-    assert function_initialize == amount_sent - commission
-
 def test_getWithdrawalReceiver_uninitialize(deploy):
     '''check if the withdraw_receiver is empty after only sending the deposit'''
-    function_initialize = deploy.getWithdrawalReceiver(agreements_number, {'from': accounts[receiver]})
+    function_initialize = deploy.getWithdrawalReceiver({'from': accounts[receiver]})
+    assert function_initialize == 0
+
+def test_getWithdrawalReceiver_initialize(deploy):
+    '''check if the withdraw_receiver is empty after only sending the deposit'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    function_initialize = deploy.getWithdrawalReceiver({'from': accounts[receiver]})
+    assert function_initialize == amount_sent
+
+@pytest.mark.parametrize("not_signee", [2, 3, 4, 5])
+def test_getWithdrawalReceiver_sender_doesnt_exists(deploy, not_signee):
+    '''check if msg.sender doesn't exists in withdrawal'''
+    function_initialize = deploy.getWithdrawalReceiver({'from': accounts[not_signee]})
     assert function_initialize == 0
 
 
