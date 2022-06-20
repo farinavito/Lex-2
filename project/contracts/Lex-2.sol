@@ -90,7 +90,7 @@ contract sendMoneyUntil {
       uint256 minDeposit = 100;
       if (msg.value >= 1000){
         //check if it works
-        storeDeposit = msg.value * 10 / 10000;
+        storeDeposit = msg.value * 10 / 1000;
       } else {
         storeDeposit = minDeposit;
       }

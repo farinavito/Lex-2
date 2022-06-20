@@ -109,12 +109,45 @@ def test_new_agreement_fails_require_msg_value_larger_or_equal_to_100(deploy, _a
     except Exception as e:
             assert e.message[50:] == 'Deposit needs to be 10% of the amount or at least 100 wei'
 
-@pytest.mark.parametrize("_deposit", [999])
-@pytest.mark.parametrize("_amount", [101, 150, 200, 800, 999, 1000])
-def test_new_agreement_fails_require_msg_value_larger_or_equal_to_10_percentage(deploy, _amount, _deposit):
-    '''check if the creation of the new agreement fails, because the msg.value is larger than 100, but it's not 10%'''
-    deploy.createAgreement(accounts[receiver], _deposit, agreement_duration, {'from': accounts[signee], 'value': _amount})
-    assert deploy.exactAgreement(2)[0] == str(2)
+def test_event_id(deploy):
+    '''check if the id in the emitted event is correct when a new agreement is created'''
+    function_initialize = deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    assert function_initialize.events[0][0]['agreementId'] == 2
+
+def test_event_signee(deploy):
+    '''check if the signee in the emitted event is correct when a new agreement is created'''
+    function_initialize = deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[5], 'value': deposit})
+    assert function_initialize.events[0][0]['agreementSignee'] == accounts[5]
+
+def test_event_receiver(deploy):
+    '''check if the receiver in the emitted event is correct when a new agreement is created'''
+    function_initialize = deploy.createAgreement(accounts[7], amount_sent, agreement_duration, {'from': accounts[5], 'value': deposit})
+    assert function_initialize.events[0][0]['agreementReceiver'] == accounts[7]
+
+def test_event_amount(deploy):
+    '''check if the amount in the emitted event is correct when a new agreement is created'''
+    function_initialize = deploy.createAgreement(accounts[7], 15**10, agreement_duration, {'from': accounts[5], 'value': deposit})
+    assert function_initialize.events[0][0]['agreementAmount'] == 15**10
+
+def test_event_deposit(deploy):
+    '''check if the deposit in the emitted event is correct when a new agreement is created and msg.value is smaller than 1000'''
+    function_initialize = deploy.createAgreement(accounts[7], amount_sent, agreement_duration, {'from': accounts[5], 'value': deposit})
+    assert function_initialize.events[0][0]['agreementDeposit'] == deposit 
+
+def test_event_deposit_2(deploy):
+    '''check if the deposit in the emitted event is correct when a new agreement is created and msg.value is larger than 1000'''
+    function_initialize = deploy.createAgreement(accounts[7], amount_sent, agreement_duration, {'from': accounts[5], 'value': 1500})
+    assert function_initialize.events[0][0]['agreementDeposit'] == 15 
+
+def test_event_status(deploy):
+    '''check if the status in the emitted event is correct when a new agreement is created'''
+    function_initialize = deploy.createAgreement(accounts[7], amount_sent, agreement_duration, {'from': accounts[5], 'value': deposit})
+    assert function_initialize.events[0][0]['agreementStatus'] == "Created"
+
+def test_event_deadline(deploy):
+    '''check if the deadline in the emitted event is correct when a new agreement is created'''
+    function_initialize = deploy.createAgreement(accounts[7], amount_sent, agreement_duration, {'from': accounts[5], 'value': deposit})
+    assert function_initialize.events[0][0]['agreementDeadline'] == agreement_duration
 
 
 
