@@ -75,17 +75,13 @@ def test_exactAgreement_deposit(deploy):
     '''check if the initial amount of the deposit is amount_sent'''
     assert deploy.exactAgreement(agreements_number)[4] == deposit
 
-def test_exactAgreement_initialize_transactionCreated(deploy):
-    '''check if the transactionCreated is 0'''
-    assert deploy.exactAgreement(agreements_number)[5] == '0'
-
 def test_exactAgreement_status(deploy):
     '''check if the initial status is equal to "Created"'''
-    assert deploy.exactAgreement(agreements_number)[6] == 'Created'
+    assert deploy.exactAgreement(agreements_number)[5] == 'Created'
 
 def test_exactAgreement_time_duration(deploy):
     '''check if the initial agreement duration'''
-    assert deploy.exactAgreement(agreements_number)[7] == agreement_duration
+    assert deploy.exactAgreement(agreements_number)[6] == agreement_duration
 
 @pytest.mark.parametrize("possibilities", [[0, 10], [10, 0], [0, 0]])
 def test_new_agreement_fails_require_larger_than_zero(possibilities, deploy):
