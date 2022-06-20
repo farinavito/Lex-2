@@ -280,6 +280,11 @@ def test_sendPayment_value_large_amount_send_value_check_signee(deploy):
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
     assert accounts[signee].balance() + amount_sent  == balance_signee + deposit
 
+def test_sendPayment_value_larger_amount_deposit_zero(deploy):
+    '''check if the deposit is set to 0'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    assert deploy.exactAgreement(agreements_number)[4] == "0"
+
 def test_sendPayment_value_large_amount_status_Terminated(deploy):
     '''check if the status is changed to Terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
@@ -304,7 +309,7 @@ def test_sendPayment_value_large_amount_send_value_withdraw_signee(deploy, value
 @pytest.mark.parametrize("value_sent",  [amount_sent])
 @pytest.mark.parametrize("value_decreased",  [less_than_amount_sent[0], less_than_amount_sent[1], less_than_amount_sent[2]])
 def test_sendPayment_value_large_amount_send_value_pair_event(deploy, value_sent, value_decreased):
-    '''check if the msg.value is not sent when amount <= msg.value sendPayment, the contract terminates'''
+    '''check if the msg.value is not sent, because  amount > msg.value sendPayment, the contract terminates'''
     function_initialized = deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent - value_decreased}) 
     assert function_initialized.events[0][0]['message'] == "The amount sent is lower than in the agreement"
 
