@@ -548,7 +548,7 @@ def test_getWithdrawalReceiver_initialize(deploy):
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     assert deploy.getWithdrawalReceiver({'from': accounts[receiver]}) == amount_sent
 
-def test_getWithdrawalReceiver_(deploy):
+def test_getWithdrawalReceiver_0(deploy):
     '''check if the withdraw_receiver is empty after only sending the deposit'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     deploy.withdrawAsTheReceiver({'from': accounts[receiver]})
@@ -565,19 +565,30 @@ def test_getWithdrawalReceiver_sender_doesnt_exists(deploy, not_receiver):
 
 
 
-def test_getWithdrawalSignee_initialize(deploy):
-    '''check if the withdraw_signee is empty after only sending the deposit'''
-    function_initialize = deploy.getWithdrawalSignee({'from': accounts[signee]})
-    assert function_initialize == 0
-
 def test_getWithdrawalSignee_uninitialize(deploy):
+    '''check if the withdraw_signee is empty after only sending the deposit'''
+    assert deploy.getWithdrawalSignee({'from': accounts[signee]}) == 0
+
+def test_getWithdrawalSignee_initialize(deploy):
     '''check if the withdraw_signee is not empty after only sending the deposit'''
-    function_initialize = deploy.getWithdrawalSignee({'from': accounts[signee]})
+    signee_balance = accounts[signee].balance()
     deploy.sendPayment(agreements_number,{'from': accounts[signee], 'value': amount_sent})
-    assert function_initialize + amount_sent == amount_sent
+    assert deploy.getWithdrawalSignee({'from': accounts[signee]}) == signee_balance - amount_sent
+
+@pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_getWithdrawalSignee_returning_access_ether_and_deposit(deploy, amount):
+    '''check if everything ok, when we need to return access ether and deposit'''
+    signee_balance = accounts[signee].balance()
+    deploy.sendPayment(agreements_number,{'from': accounts[signee], 'value': amount})
+    assert deploy.getWithdrawalSignee({'from': accounts[signee]}) == signee_balance - amount + (amount - amount_sent) + deposit
+
+def test_getWithdrawalSignee_returning_access_ether_and_deposit(deploy):
+    '''check if everything ok, when we need to return access ether and deposit'''
+    signee_balance = accounts[signee].balance()
+    deploy.sendPayment(agreements_number,{'from': accounts[signee], 'value': amount_sent})
+    assert deploy.getWithdrawalSignee({'from': accounts[signee]}) == signee_balance - amount_sent + deposit
   
 @pytest.mark.parametrize("not_signee", [2, 3, 4, 5])
 def test_getWithdrawalSignee_sender_doesnt_exists(deploy, not_signee):
     '''check if msg.sender doesn't exists in withdrawal'''
-    function_initialize = deploy.getWithdrawalSignee({'from': accounts[not_signee]})
-    assert function_initialize == 0
+    assert deploy.getWithdrawalSignee({'from': accounts[not_signee]}) == 0
