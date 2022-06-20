@@ -180,25 +180,19 @@ contract sendMoneyUntil {
   function wasContractBreached(uint256 _id) external {
     require(keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created")), "The agreement is already terminated");
     require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
-    //if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
-      if (exactAgreement[_id].deadline > block.timestamp){
-        emit NotifyUser("The agreement wasn't breached");
-      } else {
-        //terminate the agreement
-        exactAgreement[_id].status = "Terminated";
-        //return deposit to receiver
-        withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
-        //change the total amount of deposit sent to the receiver
-        totalDepositSent += exactAgreement[_id].deposit;
-        //ensure that the deposit is reduced to 0
-        exactAgreement[_id].deposit = 0;
-        emit Terminated("The agreement has been terminated");
-      }
-    /*  
+    if (exactAgreement[_id].deadline > block.timestamp){
+      emit NotifyUser("The agreement wasn't breached");
     } else {
-        emit NotifyUser("The agreement is already terminated");
+      //terminate the agreement
+      exactAgreement[_id].status = "Terminated";
+      //return deposit to receiver
+      withdraw_receiver[exactAgreement[_id].receiver] += exactAgreement[_id].deposit;
+      //change the total amount of deposit sent to the receiver
+      totalDepositSent += exactAgreement[_id].deposit;
+      //ensure that the deposit is reduced to 0
+      exactAgreement[_id].deposit = 0;
+      emit Terminated("The agreement has been terminated");
     }
-    */
   } 
 
   /// @notice The signee withdrawing the money that belongs to his/her address
