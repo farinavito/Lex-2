@@ -192,6 +192,19 @@ def test_myReceiverAgreements_emits_correct_id_agreement_2(deploy):
     deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     assert deploy.myReceiverAgreements(accounts[receiver], 1) == '2'
 
+def test_myReceiverAgreements_emits_correct_id_diff_accounts(deploy):
+    '''check if the mapping myReceiverAgreements is returning correctly the ids'''
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    deploy.createAgreement(accounts[8], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    assert deploy.myReceiverAgreements(accounts[8], 0) == '3'
+
+def test_myReceiverAgreements_emits_correct_id_diff_accounts_2(deploy):
+    '''check if the mapping myReceiverAgreements is returning correctly the ids'''
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    deploy.createAgreement(accounts[8], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    deploy.createAgreement(accounts[8], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    assert deploy.myReceiverAgreements(accounts[8], 1) == '4'
+
 
 
 '''TESTING SENDPAYMENT, INITIALIZINGPOSITIONPERIOD AND TIMENOTBREACHED FUNCTIONS'''
