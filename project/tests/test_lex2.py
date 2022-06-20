@@ -389,7 +389,7 @@ def test_wasContractBreached_require_receiver_equals_wrong_account(deploy, wrong
     '''check if the wasContractBreached fails, because exactAgreement[_id].receiver == msg.sender is the require statement'''
     with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
-@pytest.mark.aaa
+
 @pytest.mark.parametrize("wrong_accounts",  [without_receiver[0], without_receiver[1], without_receiver[2]])
 def test_wasContractBreached_require_agreement_terminated(deploy, wrong_accounts):
     '''check if the wasContractBreached fails when the contract is already terminated'''
@@ -452,12 +452,6 @@ def test_sendPayment_received_on_time_false_emit_Terminated(deploy, seconds_slee
 
 
 
-@pytest.mark.parametrize("wrong_account", [without_receiver[0], without_receiver[1], without_receiver[2]])
-def test_withdrawAsTheReceiver_first_reguire_fails(deploy, wrong_account):
-    '''require statement exactAgreement[_id].receiver == msg.sender fails'''
-    with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
-        deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[wrong_account]})
-
 def test_withdrawAsTheReceiver_second_reguire_fails_case_1(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].receiver] > 0 fails'''
     with brownie.reverts("There aren't any funds to withdraw"):
@@ -476,6 +470,14 @@ def test_withdrawAsTheReceiver_withdrawal_sent(deploy):
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     deploy.withdrawAsTheReceiver(agreements_number, {'from': accounts[receiver]})
     assert accounts[receiver].balance() == receiver_balance + amount_sent
+
+@pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
+def test_withdrawAsTheReceiver_withdrawal_sent_2(deploy, amount):
+    '''Check if the withdrawal is sent'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount})
+    deploy.withdrawAsTheReceiver({'from': accounts[receiver]})
+    with brownie.reverts("There aren't any funds to withdraw"):
+        deploy.withdrawAsTheReceiver({'from': accounts[receiver]})
 
 def test_withdrawAsTheReceiver_emit(deploy):
     '''check if it emits a message'''
