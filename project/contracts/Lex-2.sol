@@ -6,13 +6,11 @@ pragma solidity ^0.8.11;
 
 
 contract sendMoneyUntil {
-    //remove transactionCreated?
     /// @notice Defining the agreement 
     /// @param id A unique identifier of the agreement
     /// @param signee The person who commits sending the money to the receiver 
     /// @param receiver The person receiving the money
     /// @param amount The quantity of money that the signee commits sending to the receiver
-    /// @param transactionCreated Unix timestamp when transaction was sent
     /// @param deposit The first transaction sent to the agreement. Initial state will be zero
     /// @param status Representation of different stages in the agreement: Created, Terminated
     /// @param deadline The number of days till the agreement expires
@@ -22,7 +20,6 @@ contract sendMoneyUntil {
     address payable receiver; 
     uint256 amount;
     uint256 deposit;
-    uint256 transactionCreated;
     string status;
     uint256 deadline;
   }
@@ -75,7 +72,6 @@ contract sendMoneyUntil {
     address agreementReceiver, 
     uint256 agreementAmount,
     uint256 agreementDeposit,
-    uint256 agreementTransactionCreated,
     string agreementStatus,
     uint256 agreementDeadline
   );
@@ -132,7 +128,6 @@ contract sendMoneyUntil {
         newAgreement.receiver, 
         newAgreement.amount,
         newAgreement.deposit,
-        newAgreement.transactionCreated, 
         newAgreement.status,
         newAgreement.deadline
         ); 
