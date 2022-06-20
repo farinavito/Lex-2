@@ -489,29 +489,23 @@ def test_withdrawAsTheReceiver_emit(deploy):
 
 
 
-@pytest.mark.parametrize("wrong_account", [without_signee[0], without_signee[1], without_signee[2]])
-def test_withdrawAsTheSignee_first_reguire_fails(deploy, wrong_account):
-    '''require statement exactAgreement[_id].signee == msg.sender fails'''
-    with brownie.reverts("Your logged in address isn't the same as the agreement's signee"):
-        deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[wrong_account]})
-
 def test_withdrawAsTheSignee_second_reguire_fails_case_1(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].signee] > 0 fails'''
     with brownie.reverts("There aren't any funds to withdraw"):
-        deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+        deploy.withdrawAsTheSignee({'from': accounts[signee]})
 
 def test_withdrawAsTheSignee_second_reguire_fails_case_2(deploy):
     '''require statement withdraw_receiver[exactAgreement[_id].signee] > 0 fails'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    deploy.withdrawAsTheSignee({'from': accounts[signee]})
     with brownie.reverts("There aren't any funds to withdraw"):
-        deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+        deploy.withdrawAsTheSignee({'from': accounts[signee]})
 
 def test_withdrawAsTheSignee_withdrawal_sent_1(deploy):
     '''Check if the withdrawal is sent'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     signee_balance = accounts[signee].balance()
-    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    deploy.withdrawAsTheSignee({'from': accounts[signee]})
     assert accounts[signee].balance() == signee_balance + deposit
 
 @pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
@@ -519,21 +513,21 @@ def test_withdrawAsTheSignee_withdrawal_sent_2(deploy, amount):
     '''Check if the withdrawal and redundant amount is sent'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount})
     signee_balance = accounts[signee].balance()
-    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    deploy.withdrawAsTheSignee({'from': accounts[signee]})
     assert accounts[signee].balance() == signee_balance + deposit + amount - amount_sent
 
 @pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_withdrawAsTheSignee_withdrawal_sent_3(deploy, amount):
     '''Check if the withdrawal is sent'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount})
-    deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    deploy.withdrawAsTheSignee({'from': accounts[signee]})
     with brownie.reverts("There aren't any funds to withdraw"):
-        deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+        deploy.withdrawAsTheSignee({'from': accounts[signee]})
 
 def test_withdrawAsTheSignee_emit(deploy):
     '''check if the event is emited'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    function_initialize = deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]})
+    function_initialize = deploy.withdrawAsTheSignee({'from': accounts[signee]})
     assert function_initialize.events[0][0]['message'] == "Withdrawal has been transfered"
 
 
