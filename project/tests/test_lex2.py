@@ -210,11 +210,11 @@ def test_myReceiverAgreements_emits_correct_id_diff_accounts_2(deploy):
 '''INITIALIZED VARIABLES'''
 
 
-@pytest.mark.aaa
+
 def test_totalEtherCommited_initialized(deploy):
     '''check if totalEtherCommited is initialized to 0'''
     assert deploy.totalEtherCommited() == 0
-@pytest.mark.aaa
+
 def test_totalDepositSent_initialized(deploy):
     '''check if totalEtherCommited is initialized to 0'''
     assert deploy.totalDepositSent() == 0
@@ -264,7 +264,7 @@ def test_sendPayment_value_large_amount_send_value_check_signee_returned_excess(
     balance_signee = accounts[signee].balance() 
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': value_sent})
     deploy.withdrawAsTheSignee(agreements_number, {'from': accounts[signee]}) 
-    assert accounts[signee].balance() == balance_signee - value_sent + (value_sent - deploy.exactAgreement(agreements_number)[3]) + deposit
+    assert accounts[signee].balance() == balance_signee - value_sent + (value_sent - amount_sent) + deposit
 
 @pytest.mark.parametrize("value_sent",  [amount_sent, more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_sendPayment_value_larger_amount_send_value_totalEtherCommited_increased(deploy, value_sent):
