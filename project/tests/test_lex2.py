@@ -540,20 +540,24 @@ def test_withdrawAsTheSignee_emit(deploy):
 
 def test_getWithdrawalReceiver_uninitialize(deploy):
     '''check if the withdraw_receiver is empty after only sending the deposit'''
-    function_initialize = deploy.getWithdrawalReceiver({'from': accounts[receiver]})
-    assert function_initialize == 0
+    assert deploy.getWithdrawalReceiver({'from': accounts[receiver]}) == 0
+   
 
 def test_getWithdrawalReceiver_initialize(deploy):
     '''check if the withdraw_receiver is empty after only sending the deposit'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    function_initialize = deploy.getWithdrawalReceiver({'from': accounts[receiver]})
-    assert function_initialize == amount_sent
+    assert deploy.getWithdrawalReceiver({'from': accounts[receiver]}) == amount_sent
+
+def test_getWithdrawalReceiver_(deploy):
+    '''check if the withdraw_receiver is empty after only sending the deposit'''
+    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
+    deploy.withdrawAsTheReceiver({'from': accounts[receiver]})
+    assert deploy.getWithdrawalReceiver({'from': accounts[receiver]}) == 0
 
 @pytest.mark.parametrize("not_receiver", [2, 3, 4, 5])
 def test_getWithdrawalReceiver_sender_doesnt_exists(deploy, not_receiver):
     '''check if msg.sender doesn't exists in withdrawal'''
-    function_initialize = deploy.getWithdrawalReceiver({'from': accounts[not_receiver]})
-    assert function_initialize == 0
+    assert deploy.getWithdrawalReceiver({'from': accounts[not_receiver]}) == 0
 
 
 
