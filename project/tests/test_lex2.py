@@ -389,12 +389,12 @@ def test_wasContractBreached_require_receiver_equals_wrong_account(deploy, wrong
     '''check if the wasContractBreached fails, because exactAgreement[_id].receiver == msg.sender is the require statement'''
     with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
-
+@pytest.mark.aaa
 @pytest.mark.parametrize("wrong_accounts",  [without_receiver[0], without_receiver[1], without_receiver[2]])
 def test_wasContractBreached_require_receiver_equals_wrong_account_2(deploy, wrong_accounts):
-    '''check if the wasContractBreached fails when the contract is already terminated, because exactAgreement[_id].receiver == msg.sender is the require statement'''
+    '''check if the wasContractBreached fails when the contract is already terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
+    with brownie.reverts("The agreement is already terminated"):
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
 
 @pytest.mark.parametrize("right_accounts",  [receiver])

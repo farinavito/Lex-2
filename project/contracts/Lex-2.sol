@@ -178,8 +178,9 @@ contract sendMoneyUntil {
 
   /// @notice Receiver checking if the contract has been breached
   function wasContractBreached(uint256 _id) external {
+    require(keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created")), "The agreement is already terminated");
     require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
-    if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
+    //if (keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created"))){
       if (exactAgreement[_id].deadline > block.timestamp){
         emit NotifyUser("The agreement wasn't breached");
       } else {
@@ -193,9 +194,11 @@ contract sendMoneyUntil {
         exactAgreement[_id].deposit = 0;
         emit Terminated("The agreement has been terminated");
       }
+    /*  
     } else {
         emit NotifyUser("The agreement is already terminated");
     }
+    */
   } 
 
   /// @notice The signee withdrawing the money that belongs to his/her address
