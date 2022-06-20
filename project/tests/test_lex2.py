@@ -288,7 +288,7 @@ def test_sendPayment_value_larger_amount_deposit_zero(deploy):
 def test_sendPayment_value_large_amount_status_Terminated(deploy):
     '''check if the status is changed to Terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    assert deploy.exactAgreement(agreements_number)[6] == 'Terminated' 
+    assert deploy.exactAgreement(agreements_number)[5] == 'Terminated' 
 
 def test_sendPayment_value_large_amount_emit_NotifyUser(deploy):
     '''check if the event NotifyUser is emitted when amount <= msg.value in the timeNotBreached'''
@@ -321,7 +321,7 @@ def test_sendPayment_received_on_time_false_status_terminated(deploy, seconds_sl
     chain = Chain()
     chain.sleep(seconds_sleep)
     deploy.sendPayment(1, {'from': accounts[signee], 'value': amount_sent})
-    assert deploy.exactAgreement(1)[6] == 'Terminated'
+    assert deploy.exactAgreement(1)[5] == 'Terminated'
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_send_deposit(deploy, seconds_sleep):
@@ -349,7 +349,7 @@ def test_sendPayment_received_on_time_false_deposit_equals_zero(deploy, seconds_
     chain = Chain()
     chain.sleep(seconds_sleep)
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent}) 
-    assert deploy.exactAgreement(agreements_number)[5] == "0"
+    assert deploy.exactAgreement(agreements_number)[4] == "0"
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_return_transaction(deploy, seconds_sleep):
@@ -408,7 +408,7 @@ def test_wasContractBreached_after_agreements_duration_status_terminated(deploy,
     chain = Chain()
     chain.sleep(seconds_sleep)
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
-    assert deploy.exactAgreement(agreements_number)[6] == 'Terminated'
+    assert deploy.exactAgreement(agreements_number)[5] == 'Terminated'
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_wasContractBreached_after_agreements_duration_send_deposit(deploy, seconds_sleep):
@@ -436,7 +436,7 @@ def test_wasContractBreached_after_agreements_duration_deposit_equals_zero(deplo
     chain = Chain()
     chain.sleep(seconds_sleep)
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
-    assert deploy.exactAgreement(agreements_number)[5] == "0"
+    assert deploy.exactAgreement(agreements_number)[4] == "0"
 
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
 def test_sendPayment_received_on_time_false_emit_Terminated(deploy, seconds_sleep):
