@@ -164,6 +164,19 @@ def test_mySenderAgreements_emits_correct_id_accounts_2(deploy):
     deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     assert deploy.mySenderAgreements(accounts[signee], 1) == '2'
 
+def test_mySenderAgreements_emits_correct_id_diff_account(deploy):
+    '''check if the mapping mySenderAgreements is returning correctly the ids'''
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[9], 'value': deposit})
+    assert deploy.mySenderAgreements(accounts[9], 0) == '3'
+
+def test_mySenderAgreements_emits_correct_id_diff_account_2(deploy):
+    '''check if the mapping mySenderAgreements is returning correctly the ids'''
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[9], 'value': deposit})
+    deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[9], 'value': deposit})
+    assert deploy.mySenderAgreements(accounts[9], 1) == '4'
+
 
 
 '''TESTING MYRECEIVERAGREEMENTS FUNCTION'''
