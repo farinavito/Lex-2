@@ -215,13 +215,11 @@ contract sendMoneyUntil {
 
   /// @notice Return the withdrawal amount of the agreement's signee
   function getWithdrawalSignee() external view returns(uint256){
-    //require(exactAgreement[_id].signee == msg.sender, "Your logged in address isn't the same as the agreement's signee");
     return withdraw_signee[msg.sender];
   }
 
   /// @notice Return the withdrawal amount of the agreement's receiver
   function getWithdrawalReceiver() external view returns(uint256){
-    //require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
     return withdraw_receiver[msg.sender];
   }
 
