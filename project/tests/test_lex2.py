@@ -391,18 +391,11 @@ def test_wasContractBreached_require_receiver_equals_wrong_account(deploy, wrong
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
 @pytest.mark.aaa
 @pytest.mark.parametrize("wrong_accounts",  [without_receiver[0], without_receiver[1], without_receiver[2]])
-def test_wasContractBreached_require_receiver_equals_wrong_account_2(deploy, wrong_accounts):
+def test_wasContractBreached_require_agreement_terminated(deploy, wrong_accounts):
     '''check if the wasContractBreached fails when the contract is already terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
     with brownie.reverts("The agreement is already terminated"):
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
-
-@pytest.mark.parametrize("right_accounts",  [receiver])
-def test_wasContractBreached_already_terminated_status_terminated(deploy, right_accounts):
-    '''check if the wasContractBreached's status terminated'''
-    deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[right_accounts]})
-    assert function_initialize.events[0][0]['message'] == "The agreement is already terminated"
 
 def test_wasContractBreached_before_agreements_duration(deploy):
     '''check if the wasContractBreached called before agreement's duration period'''
