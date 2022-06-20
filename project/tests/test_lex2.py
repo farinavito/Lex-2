@@ -207,7 +207,21 @@ def test_myReceiverAgreements_emits_correct_id_diff_accounts_2(deploy):
 
 
 
-'''TESTING SENDPAYMENT, INITIALIZINGPOSITIONPERIOD AND TIMENOTBREACHED FUNCTIONS'''
+'''INITIALIZED VARIABLES'''
+
+
+@pytest.mark.aaa
+def test_totalEtherCommited_initialized(deploy):
+    '''check if totalEtherCommited is initialized to 0'''
+    assert deploy.totalEtherCommited() == 0
+@pytest.mark.aaa
+def test_totalDepositSent_initialized(deploy):
+    '''check if totalEtherCommited is initialized to 0'''
+    assert deploy.totalDepositSent() == 0
+    
+
+
+'''TESTING SENDPAYMENT'''
 
 
 
