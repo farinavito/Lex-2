@@ -571,14 +571,12 @@ def test_getWithdrawalSignee_uninitialize(deploy):
 
 def test_getWithdrawalSignee_initialize(deploy):
     '''check if the withdraw_signee is not empty after only sending the deposit'''
-    signee_balance = accounts[signee].balance()
     deploy.sendPayment(agreements_number,{'from': accounts[signee], 'value': amount_sent})
     assert deploy.getWithdrawalSignee({'from': accounts[signee]}) == deposit
 
 @pytest.mark.parametrize("amount", [more_than_amount_sent[0], more_than_amount_sent[1], more_than_amount_sent[2]])
 def test_getWithdrawalSignee_returning_access_ether_and_deposit(deploy, amount):
     '''check if everything ok, when we need to return access ether and deposit'''
-    signee_balance = accounts[signee].balance()
     deploy.sendPayment(agreements_number,{'from': accounts[signee], 'value': amount})
     assert deploy.getWithdrawalSignee({'from': accounts[signee]}) == amount - amount_sent + deposit
 
