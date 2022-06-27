@@ -88,6 +88,7 @@ def test_new_agreement_fails_require_larger_than_zero(possibilities, deploy):
     '''check if the creation of the new agreement fails, because the input data should be larger than 0'''
     try:
         deploy.createAgreement('0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2', possibilities[0], possibilities[1], {'from': accounts[signee], 'value': deposit})
+        pytest.fail("The try-except concept has failed in test_new_agreement_fails_require_larger_than_zero")
     except Exception as e:
         assert e.message[50:] == 'All input data must be larger than 0'
 
@@ -98,6 +99,7 @@ def test_new_agreement_fails_require_agreementStart_larger_than_deadline(deploy)
         now = chain.time()
         endAgreement = now - 10000
         deploy.createAgreement(accounts[receiver], amount_sent, endAgreement, {'from': accounts[signee], 'value': deposit})
+        pytest.fail("The try-except concept has failed in test_new_agreement_fails_require_agreementStart_larger_than_deadline")
     except Exception as e:
         assert e.message[50:] == "The agreement can't be created in the past"
 
@@ -106,6 +108,7 @@ def test_new_agreement_fails_require_msg_value_larger_or_equal_to_100(deploy, _a
     '''check if the creation of the new agreement fails, because the msg.value should be larger or equal to 100'''
     try:
         deploy.createAgreement(accounts[receiver], amount_sent, agreement_duration, {'from': accounts[signee], 'value': _amount})
+        pytest.fail("The try-except concept has failed in test_new_agreement_fails_require_msg_value_larger_or_equal_to_100")
     except Exception as e:
             assert e.message[50:] == 'Deposit needs to be 10% of the amount or at least 100 wei'
 
@@ -231,6 +234,7 @@ def test_sendPayments_fails_require_wrong_address(deploy, accounts_number):
     try:
         #wrong signer's address
         deploy.sendPayment(agreements_number, {'from': accounts[accounts_number], 'value': amount_sent})
+        pytest.fail("The try-except concept has failed in test_sendPayments_fails_require_wrong_address")
     except Exception as e:
         assert e.message[50:] == "Only the signee can pay the agreement's terms"
 
