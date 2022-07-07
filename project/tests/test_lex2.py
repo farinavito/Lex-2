@@ -594,7 +594,7 @@ def test_getWithdrawalSignee_sender_doesnt_exists(deploy, not_signee):
 '''TESTING GETMYNUMAGREEMENTSRECEIVER'''
 
 
-@pytest.mark.aaa
+
 def test_getMyNumAgreementsReceiver_fail(deploy):
     '''check if the getMyNumAgreementsReceiver fails'''
     try:
@@ -602,20 +602,47 @@ def test_getMyNumAgreementsReceiver_fail(deploy):
         pytest.fail("try except concept has failed in test_exactAgreement_getMyNumAgreementsReceiver")
     except Exception as e:
         assert e.message[50:] == "You don't have any agreements as a receiver"
-@pytest.mark.aaa
+
 def test_getMyNumAgreementsReceiver_success(deploy):
     '''check if the initial getMyNumAgreementsReceiver is equal to 1'''
     chain = Chain()
     now = chain.time()
-    startAgreement = now + 1
     deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     assert deploy.getMyNumAgreementsReceiver({'from': accounts[1]}) == 1
-@pytest.mark.aaa
+
 def test_getMyNumAgreementsReceiver_success_2(deploy):
     '''check if the initial getMyNumAgreementsReceiver is equal to 2'''
     chain = Chain()
     now = chain.time()
-    startAgreement = now + 1
     deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
     assert deploy.getMyNumAgreementsReceiver({'from': accounts[1]}) == 2
+
+
+
+'''TESTING GETMYNUMAGREEMENTSSENDER'''
+
+
+@pytest.mark.aaa
+def test_getMyNumAgreementsSender_fail(deploy):
+    '''check if the getMyNumAgreementsSender fails'''
+    try:
+        assert deploy.getMyNumAgreementsSender({'from': accounts[2]}) == 0
+        pytest.fail("try except concept has failed in test_exactAgreement_myNumAgreementsSender_fail")
+    except Exception as e:
+        assert e.message[50:] == "You don't have any agreements as a sender"
+@pytest.mark.aaa
+def test_getMyNumAgreementsSender_success(deploy):
+    '''check if the initial getMyNumAgreementsSender is equal to 1'''
+    chain = Chain()
+    now = chain.time()
+    deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[2], 'value': deposit})
+    assert deploy.getMyNumAgreementsSender({'from': accounts[2]}) == 1
+@pytest.mark.aaa
+def test_getMyNumAgreementsSender_success_2(deploy):
+    '''check if the initial getMyNumAgreementsSender is equal to 2'''
+    chain = Chain()
+    now = chain.time()
+    deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[2], 'value': deposit})
+    deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[2], 'value': deposit})
+    assert deploy.getMyNumAgreementsSender({'from': accounts[2]}) == 2

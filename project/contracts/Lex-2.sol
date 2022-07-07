@@ -234,7 +234,7 @@ contract LexTwo {
   /// @notice Return the number of the caller's agreements as the sender
   function getMyNumAgreementsSender() external view returns(uint256){
     //checking if the caller has some agreements
-    require(myNumAgreementsSender[msg.sender] > 0, "You don't have any deposits");
+    require(myNumAgreementsSender[msg.sender] > 0, "You don't have any agreements as a sender");
     //return the number of agreements that the caller has
     return myNumAgreementsSender[msg.sender];
   }
