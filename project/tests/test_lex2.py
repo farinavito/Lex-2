@@ -38,8 +38,8 @@ addressProtector4 = 6
 addressProtector5 = 7
 
 @pytest.fixture(scope="module", autouse=True)
-def deploy(sendMoneyUntil):
-    return sendMoneyUntil.deploy( {'from': accounts[0]})
+def deploy(LexTwo):
+    return LexTwo.deploy( {'from': accounts[0]})
 
 @pytest.fixture(scope="module", autouse=True)
 def new_agreement(deploy):
@@ -588,3 +588,34 @@ def test_getWithdrawalSignee_returning_access_ether_and_deposit(deploy, amount):
 def test_getWithdrawalSignee_sender_doesnt_exists(deploy, not_signee):
     '''check if msg.sender doesn't exists in withdrawal'''
     assert deploy.getWithdrawalSignee({'from': accounts[not_signee]}) == 0
+
+
+
+'''TESTING GETMYNUMAGREEMENTSRECEIVER'''
+
+
+@pytest.mark.aaa
+def test_getMyNumAgreementsReceiver_fail(deploy):
+    '''check if the getMyNumAgreementsReceiver fails'''
+    try:
+        assert deploy.getMyNumAgreementsReceiver({'from': accounts[5]}) == 0
+        pytest.fail("try except concept has failed in test_exactAgreement_getMyNumAgreementsReceiver")
+    except Exception as e:
+        assert e.message[50:] == "You don't have any agreements as a receiver"
+@pytest.mark.aaa
+def test_getMyNumAgreementsReceiver_success(deploy):
+    '''check if the initial getMyNumAgreementsReceiver is equal to 1'''
+    chain = Chain()
+    now = chain.time()
+    startAgreement = now + 1
+    deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    assert deploy.getMyNumAgreementsReceiver({'from': accounts[1]}) == 1
+@pytest.mark.aaa
+def test_getMyNumAgreementsReceiver_success_2(deploy):
+    '''check if the initial getMyNumAgreementsReceiver is equal to 2'''
+    chain = Chain()
+    now = chain.time()
+    startAgreement = now + 1
+    deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    deploy.createAgreement(accounts[1], amount_sent, agreement_duration, {'from': accounts[signee], 'value': deposit})
+    assert deploy.getMyNumAgreementsReceiver({'from': accounts[1]}) == 2
