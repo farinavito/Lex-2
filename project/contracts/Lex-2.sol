@@ -187,8 +187,8 @@ contract LexTwo {
 
   /// @notice Receiver checking if the contract has been breached
   function wasContractBreached(uint256 _id) external {
-    require(keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created")), "The agreement is already terminated");
     require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
+    require(keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created")), "The agreement is already terminated");
     if (exactAgreement[_id].deadline > block.timestamp){
       emit NotifyUser("The agreement wasn't breached");
     } else {
