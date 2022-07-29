@@ -393,14 +393,14 @@ def test_wasContractBreached_require_receiver_equals_wrong_account(deploy, wrong
     '''check if the wasContractBreached fails, because exactAgreement[_id].receiver == msg.sender is the require statement'''
     with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
-
+@pytest.mark.aaa
 @pytest.mark.parametrize("wrong_accounts",  [without_receiver[0], without_receiver[1], without_receiver[2]])
 def test_wasContractBreached_require_agreement_terminated(deploy, wrong_accounts):
     '''check if the wasContractBreached fails when the contract is already terminated'''
     deploy.sendPayment(agreements_number, {'from': accounts[signee], 'value': amount_sent})
-    with brownie.reverts("The agreement is already terminated"):
+    with brownie.reverts("Your logged in address isn't the same as the agreement's receiver"):
         deploy.wasContractBreached(agreements_number, {'from': accounts[wrong_accounts]})
-
+@pytest.mark.aaa
 def test_wasContractBreached_before_agreements_duration(deploy):
     '''check if the wasContractBreached called before agreement's duration period'''
     function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
@@ -441,14 +441,15 @@ def test_wasContractBreached_after_agreements_duration_deposit_equals_zero(deplo
     chain.sleep(seconds_sleep)
     deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert deploy.exactAgreement(agreements_number)[4] == "0"
-
+@pytest.mark.aaa
 @pytest.mark.parametrize("seconds_sleep",  [more_than_agreement_duration[0], more_than_agreement_duration[1], more_than_agreement_duration[2]])
-def test_sendPayment_received_on_time_false_emit_Terminated(deploy, seconds_sleep):
+def test_sendPayment_received_on_time_false_emit_Terminated_2(deploy, seconds_sleep):
     '''check if the event Terminated is emitted when transaction is sent past the agreement's duration'''
     chain = Chain()
     chain.sleep(seconds_sleep)
     function_initialize = deploy.wasContractBreached(agreements_number, {'from': accounts[receiver]})
     assert function_initialize.events[0][0]['message'] == "The agreement has been terminated"
+    
 
 
 

@@ -186,11 +186,11 @@ contract LexTwo {
   }
 
   /// @notice Receiver checking if the contract has been breached
-  function wasContractBreached(uint256 _id) external returns(bool){
+  function wasContractBreached(uint256 _id) external returns(uint256){
     require(exactAgreement[_id].receiver == msg.sender, "Your logged in address isn't the same as the agreement's receiver");
     require(keccak256(bytes(exactAgreement[_id].status)) == keccak256(bytes("Created")), "The agreement is already terminated");
     if (exactAgreement[_id].deadline > block.timestamp){
-      return false;
+      emit NotifyUser("The agreement wasn't breached");
     } else {
       //terminate the agreement
       exactAgreement[_id].status = "Terminated";
@@ -200,7 +200,7 @@ contract LexTwo {
       totalDepositSent += exactAgreement[_id].deposit;
       //ensure that the deposit is reduced to 0
       exactAgreement[_id].deposit = 0;
-      return true;
+      emit Terminated("The agreement has been terminated");
     }
   } 
 
