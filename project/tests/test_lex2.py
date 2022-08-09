@@ -56,7 +56,7 @@ def isolation(fn_isolation):
 
 
 def test_exactAgreement_id(deploy):
-    '''check if the first id of the agreement is zero'''
+    '''check if the first id of the agreement is 1'''
     assert deploy.exactAgreement(agreements_number)[0] == str(agreements_number)
 
 def test_exactAgreement_signee(deploy):
